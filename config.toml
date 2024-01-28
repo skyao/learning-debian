@@ -1,5 +1,5 @@
 baseURL = "/"
-title = "xxxx学习笔记"
+title = "Debian 学习笔记"
 
 enableRobotsTXT = true
 uglyurls = true
@@ -40,8 +40,8 @@ id = "G-4BVWTNS4MB"
 
 [languages]
 [languages.zh]
-title = "xxxx学习笔记"
-description = "xxxx学习笔记"
+title = "Debian 学习笔记"
+description = "Debian 学习笔记"
 languageName ="中文"
 contentDir = "content"
 time_format_default = "2006-01-02"
@@ -87,18 +87,18 @@ version = "0.0"
 
 # A link to latest version of the docs. Used in the "version-banner" partial to
 # point people to the main doc site.
-url_latest_version = "https://github.com/skyao/learning-xxxx"
+url_latest_version = "https://github.com/skyao/learning-debian"
 
 # Repository configuration (URLs for in-page links to opening issues and suggesting changes)
 github_repo = "https://github.com/skyao/docsy-example"
 # An optional link to a related project repo. For example, the sibling repository where your product code lives.
-github_project_repo = "https://github.com/skyao/learning-xxxx"
+github_project_repo = "https://github.com/skyao/learning-debian"
 
 # Specify a value here if your content directory is not in your repo's root directory
 # github_subdir = ""
 
 # Google Custom Search Engine ID. Remove or comment out to disable search.
-gcs_engine_id = "xxxxxxxx"
+gcs_engine_id = "a44bd639f3a554e52"
 
 # Enable Algolia DocSearch
 algolia_docsearch = false
