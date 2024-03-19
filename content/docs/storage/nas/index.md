@@ -162,12 +162,14 @@ UUID=80D7-F301  /boot/efi       vfat    umask=0077      0       1
 UUID=d5aaad4b-8382-4153-adfc-f7c797e74ee5 /timeshift      ext4    defaults        0       2
 ```
 
+增加第一块 ssd 硬盘的挂载，挂载到 "/mnt/storage1"：
+
 ```bash
 # /storage1 was on /dev/nvme0n1p1 for ssd nas
 UUID=1b50172f-44fd-46a3-8499-b169d7d91eac /mnt/storage1      ext4    defaults        0       2
 ```
 
-重启机器。
+重启机器。再看一下分区挂载情况：
 
 ```bash
 sudo lsblk -f
@@ -218,6 +220,8 @@ NEED_STATD="no"
 NEED_IDMAPD="yes"
 ```
 
+继续修改 nfs-kernel-server 的配置：
+
 ```bash
 sudo vi /etc/default/nfs-kernel-server
 ```
@@ -238,13 +242,22 @@ RPCMOUNTDOPTS="--manage-gids -N 2 -N 3"
 sudo vi /etc/exports
 ```
 
+修改 nfs exports 的内容，这里我们先 export 第一块4t ssd 硬盘的 share 目录：
+
 ```bash
 /mnt/storage1/share 192.168.0.0/16(rw,sync,no_root_squash,no_subtree_check,crossmnt,fsid=0)
 ```
 
+重启 nfs-kernel-server，查看 nfs-kernel-server 的状态：
+
 ```bash
-$ sudo systemctl restart nfs-kernel-server
-$ sudo systemctl status nfs-kernel-server
+sudo systemctl restart nfs-kernel-server
+sudo systemctl status nfs-kernel-server
+```
+
+输出为：
+
+```bash
 ● nfs-server.service - NFS server and services
      Loaded: loaded (/lib/systemd/system/nfs-server.service; enabled; preset: enabled)
      Active: active (exited) since Mon 2024-01-29 21:09:29 EST; 6s ago
@@ -261,7 +274,12 @@ Jan 29 21:09:29 skynas3 systemd[1]: Finished nfs-server.service - NFS server and
 验证：
 
 ```bash
-$ ps -ef | grep nfs
+ps -ef | grep nfs
+```
+
+输出为：
+
+```
 root         637       1  0 20:59 ?        00:00:00 /usr/sbin/nfsdcld
 root         830       2  0 21:09 ?        00:00:00 [nfsd]
 root         831       2  0 21:09 ?        00:00:00 [nfsd]
@@ -277,6 +295,11 @@ root         837       2  0 21:09 ?        00:00:00 [nfsd]
 
 ```bash
 sudo showmount -e
+```
+
+输出为:
+
+```bash
 Export list for skynas3:
 /mnt/storage1/share 192.168.0.0/16
 ```
