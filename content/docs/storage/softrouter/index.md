@@ -1,10 +1,10 @@
 ---
-title: "软交换兼职nas服务器"
-linkTitle: "兼职nas"
+title: "用物理机实现的SSD NAS存储"
+linkTitle: "SSD NAS（物理机）"
 date: 2024-01-18
 weight: 20
 description: >
-  利用 debian 12.4 在软交换上实现的 NAS 方案
+  利用 debian 12.4 在物理机上实现的 SSD NAS 方案
 ---
 
 ## 构想
@@ -13,11 +13,13 @@ description: >
 
 这样就实现了 56g 网络 + 高速 SSD 的 NAS。
 
+> 备注：因为兼容性原因，56g的 hp544+ 这块 cx3 pro 的网卡无法直通多块网卡给单个虚拟机（可以直通一块卡，两块就报错，换cx4以上就正常），所以这台机器使用的是物理机安装 debian 12.4。
+
 ## 准备工作
 
 ### 准备物理机
 
-软交换机器为了性能采用的是物理机方式安装 debian，插了四块 hp544+ 网卡，实现了 40g/56g 软交换。
+软交换机器为了性能和兼容采用的是物理机方式安装 debian，插了四块 hp544+ 网卡，实现了 40g/56g 软交换。
 
 基于 40g/56g 网卡的高速网络已经满足。
 
@@ -62,7 +64,13 @@ Device              Start        End    Sectors  Size Type
 /dev/nvme0n1p3 7813550080 8001572863  188022784 89.7G Linux filesystem
 ```
 
-准备使用 nvme0n1p2 这个分区来存放 nfs 共享文件。
+准备使用 nvme0n1p2 这个分区来存放 nfs 共享文件。在根目录下建立 "/data" 目录：
+
+```bash
+sudo mkdir /data
+```
+
+
 
 ## 搭建 nas 服务器端
 
@@ -172,9 +180,6 @@ sudo mkdir -p /data/{share,pve-share}
 
 sudo chown -R nobody:nogroup /data/share
 sudo chown -R nobody:nogroup /data/pve-share
-
-sudo chown nobody:nogroup /mnt/storage1/share
-sudo chmod 755 /mnt/storage1/share
 ```
 
 创建 export 目录：
@@ -208,7 +213,8 @@ sudo vi /etc/exports
 修改 nfs exports 的内容:
 
 ```bash
-/exports   192.168.0.0/255.255.0.0(rw,no_root_squash,no_subtree_check,crossmnt,fsid=0)
+/exports/share   192.168.0.0/16(rw,no_root_squash,no_subtree_check,crossmnt,fsid=0)
+/exports/pve-share   192.168.0.0/16(rw,no_root_squash,no_subtree_check,crossmnt,fsid=0)
 ```
 
 重启 nfs-kernel-server，查看 nfs-kernel-server 的状态：
@@ -332,7 +338,7 @@ $ sudo rm -rf nfs-test11
 cp /var/lib/vz/dump/vzdump-qemu-101-2024_02_12-16_13_09.* /mnt/pve/nfs99/dump
 ```
 
-对于还没有加入 pve 集群的机器，需要先收工 mount nfs 到本地，
+对于还没有加入 pve 集群的机器，需要先手工 mount nfs 到本地：
 
 ```bash
 sudo mkdir -p /mnt/pve/nfs
@@ -341,10 +347,22 @@ sudo mount.nfs 192.168.0.99:/exports/pve-share /mnt/pve/nfs
 # sudo mount.nfs4 192.168.0.99:/exports/pve-share /mnt/pve/nfs
 ```
 
-然后再复制：
+然后再复制 backup 文件：
 
 ```bash
 cp /var/lib/vz/dump/vzdump-qemu-101-2024_02_12-16_13_09.* /mnt/pve/nfs/dump
+```
+
+为了方便备份各个机器独有的文件（而不是模版等可以共享的文件），在这个 nfs 目录下新建一个 node-backup 目录，并为每个节点建立一个子目录：
+
+```bash
+mkdir -p /mnt/pve/nfs/node-backup/skyserver4/dump
+```
+
+然后就可以复制
+
+```bash
+cp xxxx /mnt/pve/nfs/node-backup/skyserver4/dump
 ```
 
 

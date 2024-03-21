@@ -1,10 +1,10 @@
 ---
-title: "SSD NAS存储"
-linkTitle: "SSD NAS"
+title: "用虚拟机实现的SSD NAS存储"
+linkTitle: "SSD NAS（虚拟机）"
 date: 2024-01-18
 weight: 2000
 description: >
-  利用 debian 12.4 实现的纯 SSD NAS 方案
+  利用 debian 12.4 在 pve 虚拟机中实现的 SSD NAS 方案
 ---
 
 ## 构想
@@ -31,8 +31,7 @@ description: >
 
 ```bash
 $ lspci | grep Non-Volatile
-
-02:00.0 Non-Volatile memory controller: MAXIO Technology (Hangzhou) Ltd. NVMe SSD Controller MAP1602 (rev 01)
+03:00.0 Non-Volatile memory controller: MAXIO Technology (Hangzhou) Ltd. NVMe SSD Controller MAP1602 (rev 01)
 ```
 
 因为硬盘没有分区，所以看起来是这样：
@@ -79,8 +78,6 @@ I/O size (minimum/optimal): 512 bytes / 512 bytes
 Disklabel type: gpt
 Disk identifier: 9F1409D0-DA10-5446-8662-4ADAFBF1128F
 ```
-
-## 搭建 nas
 
 ### 硬盘分区
 
@@ -139,10 +136,14 @@ Writing superblocks and filesystem accounting information: done
 
 ```bash
 sudo lsblk -f
-NAME        FSTYPE  FSVER          LABEL                 UUID                                 FSAVAIL FSUSE% MOUNTPOINTS
-......                         
-nvme0n1                                                                                                      
-└─nvme0n1p1 ext4    1.0                                  1b50172f-44fd-46a3-8499-b169d7d91eac 
+[sudo] password for sky: 
+NAME        FSTYPE FSVER LABEL UUID                                 FSAVAIL FSUSE% MOUNTPOINTS
+sda                                                                                
+├─sda1      vfat   FAT32       80D7-F301                             505.1M     1% /boot/efi
+├─sda2      ext4   1.0         59bbb3ad-27e7-4e1e-b40e-0e6a8a8386cc  430.8G     1% /
+└─sda3      ext4   1.0         d5aaad4b-8382-4153-adfc-f7c797e74ee5   38.6G     9% /timeshift
+nvme0n1                                                                            
+└─nvme0n1p1 ext4   1.0         b4e82288-5290-4d64-a45e-94c4ef657611
 ```
 
 执行
@@ -165,30 +166,63 @@ UUID=d5aaad4b-8382-4153-adfc-f7c797e74ee5 /timeshift      ext4    defaults      
 增加第一块 ssd 硬盘的挂载，挂载到 "/mnt/storage1"：
 
 ```bash
-# /storage1 was on /dev/nvme0n1p1 for ssd nas
-UUID=1b50172f-44fd-46a3-8499-b169d7d91eac /mnt/storage1      ext4    defaults        0       2
+# /storage1 was on /dev/nvme0n1p1(aigo p7000z 4t)
+UUID=b4e82288-5290-4d64-a45e-94c4ef657611 /mnt/storage1      ext4    defaults        0       2
 ```
 
 重启机器。再看一下分区挂载情况：
 
 ```bash
-sudo lsblk -f
-NAME        FSTYPE  FSVER            LABEL                 UUID                                 FSAVAIL FSUSE% MOUNTPOINTS
-                           
-nvme0n1                                                                                                        
-└─nvme0n1p1 ext4    1.0                                    1b50172f-44fd-46a3-8499-b169d7d91eac    3.5T     0% /mnt/storage1
+$ sudo lsblk -f
+
+NAME        FSTYPE FSVER LABEL UUID                                 FSAVAIL FSUSE% MOUNTPOINTS
+sda                                                                                
+├─sda1      vfat   FAT32       80D7-F301                             505.1M     1% /boot/efi
+├─sda2      ext4   1.0         59bbb3ad-27e7-4e1e-b40e-0e6a8a8386cc  430.7G     1% /
+└─sda3      ext4   1.0         d5aaad4b-8382-4153-adfc-f7c797e74ee5   38.6G     9% /timeshift
+nvme0n1                                                                            
+└─nvme0n1p1 ext4   1.0         b4e82288-5290-4d64-a45e-94c4ef657611    3.5T     0% /mnt/storage1
 ```
 
 ### 准备共享目录
+
+为了方便后续的管理，采用伪文件系统:
 
 ```bash
 cd /mnt/storage1 
 
 sudo mkdir share
+sudo mkdir pve-share
 
-sudo chown nobody:nogroup /mnt/storage1/share
-sudo chmod 755 /mnt/storage1/share
+sudo chown -R nobody:nogroup /mnt/storage1/share
+sudo chown -R nobody:nogroup /mnt/storage1/pve-share
 ```
+
+创建 export 目录：
+
+```bash
+sudo mkdir -p /exports/{share,pve-share}
+
+sudo chown -R nobody:nogroup /exports
+```
+
+修改 `/etc/fstab` 文件来 mount 伪文件系统和 exports
+
+```bash
+ sudo vi /etc/fstab
+```
+
+增加如下内容:
+
+```bash
+# nfs exports
+/mnt/storage1/share /exports/share     none bind
+/mnt/storage1/pve-share /exports/pve-share    none bind
+```
+
+重启。
+
+## 搭建 nas
 
 ### 安装 nfs server
 
@@ -242,10 +276,11 @@ RPCMOUNTDOPTS="--manage-gids -N 2 -N 3"
 sudo vi /etc/exports
 ```
 
-修改 nfs exports 的内容，这里我们先 export 第一块4t ssd 硬盘的 share 目录：
+修改 nfs exports 的内容，这里我们先 export 第一块4t ssd 硬盘的 share/pve-share 目录：
 
 ```bash
-/mnt/storage1/share 192.168.0.0/16(rw,sync,no_root_squash,no_subtree_check,crossmnt,fsid=0)
+/exports/share   192.168.0.0/16(rw,no_root_squash,no_subtree_check,crossmnt,fsid=0)
+/exports/pve-share   192.168.0.0/16(rw,no_root_squash,no_subtree_check,crossmnt,fsid=0)
 ```
 
 重启 nfs-kernel-server，查看 nfs-kernel-server 的状态：
@@ -258,17 +293,18 @@ sudo systemctl status nfs-kernel-server
 输出为：
 
 ```bash
-● nfs-server.service - NFS server and services
+nfs-server.service - NFS server and services
      Loaded: loaded (/lib/systemd/system/nfs-server.service; enabled; preset: enabled)
-     Active: active (exited) since Mon 2024-01-29 21:09:29 EST; 6s ago
-    Process: 827 ExecStartPre=/usr/sbin/exportfs -r (code=exited, status=0/SUCCESS)
-    Process: 828 ExecStart=/usr/sbin/rpc.nfsd (code=exited, status=0/SUCCESS)
-   Main PID: 828 (code=exited, status=0/SUCCESS)
-        CPU: 11ms
+    Drop-In: /run/systemd/generator/nfs-server.service.d
+             └─order-with-mounts.conf
+     Active: active (exited) since Wed 2024-03-20 23:09:19 EDT; 17ms ago
+    Process: 863 ExecStartPre=/usr/sbin/exportfs -r (code=exited, status=0/SUCCESS)
+    Process: 864 ExecStart=/usr/sbin/rpc.nfsd (code=exited, status=0/SUCCESS)
+   Main PID: 864 (code=exited, status=0/SUCCESS)
+        CPU: 7ms
 
-
-Jan 29 21:09:29 skynas3 systemd[1]: Starting nfs-server.service - NFS server and services...
-Jan 29 21:09:29 skynas3 systemd[1]: Finished nfs-server.service - NFS server and services.
+Mar 20 23:09:19 skynas3 systemd[1]: Starting nfs-server.service - NFS server and services...
+Mar 20 23:09:19 skynas3 systemd[1]: Finished nfs-server.service - NFS server and services.
 ```
 
 验证：
@@ -280,15 +316,16 @@ ps -ef | grep nfs
 输出为：
 
 ```
-root         637       1  0 20:59 ?        00:00:00 /usr/sbin/nfsdcld
-root         830       2  0 21:09 ?        00:00:00 [nfsd]
-root         831       2  0 21:09 ?        00:00:00 [nfsd]
-root         832       2  0 21:09 ?        00:00:00 [nfsd]
-root         833       2  0 21:09 ?        00:00:00 [nfsd]
-root         834       2  0 21:09 ?        00:00:00 [nfsd]
-root         835       2  0 21:09 ?        00:00:00 [nfsd]
-root         836       2  0 21:09 ?        00:00:00 [nfsd]
-root         837       2  0 21:09 ?        00:00:00 [nfsd]
+ps -ef | grep nfs
+root         714       1  0 23:04 ?        00:00:00 /usr/sbin/nfsdcld
+root         866       2  0 23:09 ?        00:00:00 [nfsd]
+root         867       2  0 23:09 ?        00:00:00 [nfsd]
+root         868       2  0 23:09 ?        00:00:00 [nfsd]
+root         869       2  0 23:09 ?        00:00:00 [nfsd]
+root         870       2  0 23:09 ?        00:00:00 [nfsd]
+root         871       2  0 23:09 ?        00:00:00 [nfsd]
+root         872       2  0 23:09 ?        00:00:00 [nfsd]
+root         873       2  0 23:09 ?        00:00:00 [nfsd]
 ```
 
 查看当前挂载情况：
@@ -301,10 +338,44 @@ sudo showmount -e
 
 ```bash
 Export list for skynas3:
-/mnt/storage1/share 192.168.0.0/16
+/exports/pve-share 192.168.0.0/16
+/exports/share     192.168.0.0/16
 ```
 
 ## nfs客户端
+
+- https://www.howtoforge.com/tutorial/install-nfs-server-and-client-on-debian/： 主要参考这个文档的做法
+
+## pve nfs storage
+
+在 pve 下，点击 “datacenter” -> “storage” -> “Add”
+
+![](images/add-nfs-storage.png)
+
+备注: nfs version 这里无法选择 4 / 4.1 / 4.2，只能选择 default 。后续再看。
+
+完成这个设置之后，该集群内的任何一台机器上，都会出现一个 `/mnt/pve/nfs99` 目录，mount 到 上面的 nfs exports。之后就可以通过这个目录像访问本地文件夹一样访问nfs。
+
+## 遇到的问题
+
+### nfs 残余数据
+
+期间遇到一个问题，我先创建了一个 nfs storage，指向了 share 目录。后来发现需要 export 两个目录，普通 share 和 pve 专用的 pve-share，避免将两者的文件混合起来。
+
+然后就遇到问题：旧的 nfs storage 删除之后，再创建同名的 nfs storage 指向新的 pve-share，但实际操作的依然是旧的 share。反复尝试过各种方法都无效。
+
+- 清理 `/mnt/pve/` 目录
+- 清理 `/var/lib/rrdcached/db/pve2-storage/` 目录
+
+```bash
+sudo find / -type f -exec grep "nfs02" {} \;
+grep: /var/log/journal/4ba9084c7be94c57a943bf7c2aa034a5/system.journal: binary file matches
+update /var/lib/rrdcached/db/pve2-storage/skyaio2/nfs02 1710992038:4031332220928:0
+```
+
+只好在清理完这些信息之后，再用一个新的名字重新创建 nfs storage，比如 nfs02-ssd 。
+
+## 参考资料
 
 - https://www.linuxtechi.com/how-to-install-nfs-server-on-debian/
 - https://www.howtoforge.com/tutorial/install-nfs-server-and-client-on-debian/
