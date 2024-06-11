@@ -7,6 +7,14 @@ description: >
   增加账号的sudo权限
 ---
 
+## 安装
+
+先 su 到 root 账号，安装 sudo：
+
+```bash
+apt install sudo
+```
+
 ## 问题
 
 安装时默认的 sky 账号是没有 sudo 权限的：

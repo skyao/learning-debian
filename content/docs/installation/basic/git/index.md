@@ -23,6 +23,7 @@ git version 2.39.2
 配置代理
 
 ```bash
+mkdir -p ~/.ssh/
 vi ~/.ssh/config
 ```
 
