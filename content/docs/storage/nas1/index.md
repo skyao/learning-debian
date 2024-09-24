@@ -1,10 +1,10 @@
 ---
 title: "用物理机实现的SSD NAS存储"
 linkTitle: "SSD NAS（物理机）"
-date: 2024-01-18
-weight: 20
+date: 2024-09-17
+weight: 10
 description: >
-  利用 debian 12.4 在物理机上实现的 SSD NAS 方案
+  利用 debian 12 在物理机上实现的 SSD NAS 方案
 ---
 
 ## 构想
@@ -13,7 +13,7 @@ description: >
 
 这样就实现了 56g 网络 + 高速 SSD 的 NAS。
 
-> 备注：因为兼容性原因，56g的 hp544+ 这块 cx3 pro 的网卡无法直通多块网卡给单个虚拟机（可以直通一块卡，两块就报错，换cx4以上就正常），所以这台机器使用的是物理机安装 debian 12.4。
+> 备注：因为兼容性原因，56g的 hp544+ 这块 cx3 pro 的网卡无法直通多块网卡给单个虚拟机（可以直通一块卡，两块就报错，换cx4以上就正常），所以这台机器使用的是物理机安装 debian 12.7。
 
 ## 准备工作
 
@@ -25,52 +25,97 @@ description: >
 
 ### 硬盘情况
 
-暂时只有一块 4t 的硬盘，lspci 能看到这块 ssd 硬盘：
+机器上目前是一块256g的三星pm981a用来安装 debian 操作系统，两块三星pm983a 1t 用来做 nas，lspci 能看到这三块 ssd 硬盘：
 
 ```bash
 $ lspci | grep Non-Volatile
-
-03:00.0 Non-Volatile memory controller: MAXIO Technology (Hangzhou) Ltd. NVMe SSD Controller MAP1602 (rev 01)
+03:00.0 Non-Volatile memory controller: Samsung Electronics Co Ltd NVMe SSD Controller SM981/PM981/PM983
+04:00.0 Non-Volatile memory controller: Samsung Electronics Co Ltd NVMe SSD Controller SM981/PM981/PM983
+07:00.0 Non-Volatile memory controller: Samsung Electronics Co Ltd NVMe SSD Controller SM981/PM981/PM983
 ```
+
+还有一块东芝 mg08 14t 的机械硬盘，准备用来做资料备份。
 
 分区情况：
 
 ```bash
 $ sudo lsblk -l   
 
-NAME      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
-nvme0n1   259:0    0  3.7T  0 disk 
-nvme0n1p1 259:1    0  512M  0 part /boot/efi
-nvme0n1p2 259:2    0  3.6T  0 part /
-nvme0n1p3 259:3    0 89.7G  0 part /timeshift
+NAME      MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
+sda         8:0    0  12.7T  0 disk 
+sda1        8:1    0  12.7T  0 part /var/data3
+nvme1n1   259:0    0 838.4G  0 disk 
+nvme0n1   259:1    0 838.4G  0 disk 
+nvme1n1p1 259:2    0 838.4G  0 part /var/data2
+nvme0n1p1 259:3    0 838.4G  0 part /var/data
+nvme2n1   259:4    0 238.5G  0 disk 
+nvme2n1p1 259:5    0   512M  0 part /boot/efi
+nvme2n1p2 259:6    0 186.3G  0 part /
+nvme2n1p3 259:7    0  51.7G  0 part /var/timeshift
 ```
 
 用 fdisk 看更清晰一些：
 
 ```bash
 $ sudo fdisk -l
-[sudo] password for sky: 
-Disk /dev/nvme0n1: 3.73 TiB, 4096805658624 bytes, 8001573552 sectors
-Disk model: YSSDHB-4TN7000                          
+
+Disk /dev/nvme1n1: 838.36 GiB, 900185481216 bytes, 1758174768 sectors
+Disk model: MZ1LB960HBJR-000FB                      
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 4096 bytes
+I/O size (minimum/optimal): 131072 bytes / 131072 bytes
+Disklabel type: gpt
+Disk identifier: B724F254-A8C9-4FDD-B030-B68A85D4F6FD
+
+Device         Start        End    Sectors   Size Type
+/dev/nvme1n1p1  2048 1758173183 1758171136 838.4G Linux filesystem
+
+
+Disk /dev/nvme0n1: 838.36 GiB, 900185481216 bytes, 1758174768 sectors
+Disk model: MZ1LB960HBJR-000FB                      
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 4096 bytes
+I/O size (minimum/optimal): 131072 bytes / 131072 bytes
+Disklabel type: gpt
+Disk identifier: D495383E-8798-4B53-BED6-4CB6BBA29B74
+
+Device         Start        End    Sectors   Size Type
+/dev/nvme0n1p1  2048 1758173183 1758171136 838.4G Linux filesystem
+
+
+Disk /dev/nvme2n1: 238.47 GiB, 256060514304 bytes, 500118192 sectors
+Disk model: SAMSUNG MZVLB256HBHQ-000L7              
 Units: sectors of 1 * 512 = 512 bytes
 Sector size (logical/physical): 512 bytes / 512 bytes
 I/O size (minimum/optimal): 512 bytes / 512 bytes
 Disklabel type: gpt
-Disk identifier: C8721E1F-237D-432A-80ED-81419A0B93D6
+Disk identifier: F33C8916-7384-11EF-A4EE-8B1FC28B9DC5
 
-Device              Start        End    Sectors  Size Type
-/dev/nvme0n1p1       2048    1050623    1048576  512M EFI System
-/dev/nvme0n1p2    1050624 7813550079 7812499456  3.6T Linux filesystem
-/dev/nvme0n1p3 7813550080 8001572863  188022784 89.7G Linux filesystem
+Device             Start       End   Sectors   Size Type
+/dev/nvme2n1p1      2048   1050623   1048576   512M EFI System
+/dev/nvme2n1p2   1050624 391675903 390625280 186.3G Linux filesystem
+/dev/nvme2n1p3 391675904 500117503 108441600  51.7G Linux filesystem
+
+
+Disk /dev/sda: 12.73 TiB, 14000519643136 bytes, 27344764928 sectors
+Disk model: TOSHIBA MG08ACA1
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 4096 bytes
+I/O size (minimum/optimal): 4096 bytes / 4096 bytes
+Disklabel type: gpt
+Disk identifier: D64050D6-6671-0C41-9881-3E1CECCD24C1
+
+Device     Start         End     Sectors  Size Type
+/dev/sda1   2048 27344762879 27344760832 12.7T Linux filesystem
 ```
 
-准备使用 nvme0n1p2 这个分区来存放 nfs 共享文件。在根目录下建立 "/data" 目录：
+准备使用 `/dev/nvme1n1p1` / `/dev/nvme0n1p1` / `/dev/sda1` 这三个分区来存放 nfs 共享文件。在根目录下建立 "/data" 目录：
 
 ```bash
 sudo mkdir /data
 ```
 
-
+修改 timeshift 配置，将 `/data` 加入到 excludes 。
 
 ## 搭建 nas 服务器端
 
@@ -86,9 +131,15 @@ sudo systemctl enable nfs-kernel-server
 
 # 验证
 sudo systemctl status nfs-kernel-server
-Jan 29 20:40:15 skynas3 systemd[1]: Starting nfs-server.service - NFS server and services...
-Jan 29 20:40:15 skynas3 exportfs[1422]: exportfs: can't open /etc/exports for reading
-Jan 29 20:40:16 skynas3 systemd[1]: Finished nfs-server.service - NFS server and services.
+● nfs-server.service - NFS server and services
+     Loaded: loaded (/lib/systemd/system/nfs-server.service; enabled; preset: enabled)
+     Active: active (exited) since Tue 2024-09-17 04:06:44 CST; 28s ago
+   Main PID: 1901 (code=exited, status=0/SUCCESS)
+        CPU: 6ms
+
+Sep 17 04:06:42 switch99 systemd[1]: Starting nfs-server.service - NFS server and services...
+Sep 17 04:06:42 switch99 exportfs[1900]: exportfs: can't open /etc/exports for reading
+Sep 17 04:06:44 switch99 systemd[1]: Finished nfs-server.service - NFS server and services.
 ```
 
 ### 配置 nfs v4

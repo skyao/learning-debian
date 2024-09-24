@@ -1,7 +1,7 @@
 ---
 title: "git"
 linkTitle: "git"
-date: 2024-01-18
+date: 2024-09-16
 weight: 40
 description: >
   安装配置 git
@@ -17,7 +17,7 @@ apt install git
 
 ```bash
 $ git version
-git version 2.39.2
+git version 2.39.5
 ```
 
 配置代理

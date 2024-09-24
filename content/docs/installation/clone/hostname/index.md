@@ -9,5 +9,5 @@ description: >
 
 参考：
 
-https://skyao.io/learning-ubuntu-server/docs/installation/basic/change-hostname.html
+https://skyao.io/learning-ubuntu-server/docs/installation/basic/change-hostname
 

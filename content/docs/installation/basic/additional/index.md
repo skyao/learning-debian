@@ -21,6 +21,12 @@ sudo apt install dkms
 sudo apt install htop unzip zip curl
 ```
 
+网络速度测试软件：
+
+```bash
+sudo apt install iperf iperf3
+```
+
 ### 修复 locale 报错
 
 默认安装之后经常在执行各种命令时看到如下的警告：
