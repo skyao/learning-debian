@@ -18,10 +18,14 @@ General：
 OS:
 
 - iso image： 选 netinst.iso
+- type: linux
+- version: 6.x - 2.6 kernel
 
 System:
 
+- Graphic card: default
 - Machine: q35 (直通时必须)
+- SCSI controller: Virtio SCSI single
 - qemu agent: 勾选
 - bios: OVMF(UEFI) (直通时必须)
 - EFI storage: local
@@ -30,16 +34,19 @@ System:
 Disk:
 
 - bus/device： SCSI
-- SCSI controller： VirtIO SCSI single
-- IO Thread 勾选
+- SCSI Controller: 自动选择 Virtio SCSI single
+- Cache： default
+- IO Thread： 勾选
+- Storage： local
 - format： QEMU image format(qcow2)
 - 高级选项中：勾选 backup
 - side: 512g
 
 cpu：
 
-- type：host （暂时不用担心迁移的问题）
-- 1 socket 4 core
+- Type：host （暂时不用担心迁移的问题）
+- Socket：1
+- Cores： 4
 
 Memory:
 
@@ -51,7 +58,7 @@ Network:
 - bridage: vmbr0
 - model: virtIO
 
-确认之后，虚拟机属性中，boot order 去掉 net0，保留 csi0 和 ide2 光盘启动。
+确认之后，先别启动，在虚拟机属性中，找到 boot order ，去掉 net0，保留 csi0 和 ide2 光盘启动。
 
 > 备注：一定要保留硬盘启动并且在光盘前，否则安装完成后重启又进入安装流程了。而 pve 有bug，这种情况下无法关机，只能把整机重启，非常烦人。
 

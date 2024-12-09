@@ -87,7 +87,7 @@ No snapshots found
   "exclude" : [
     "/root/**",
     "/home/**",
-    "/var/timeshift/**",
+    "/timeshift/**",
     "/var/data/**",
     "/var/data2/**",
     "/var/data3/**"
@@ -96,7 +96,7 @@ No snapshots found
 }
 ```
 
-需要排除的内容通常包括用户目录（`/root/`和 `/home/`），以及资料存储如我这里的 `"/var/data/` 等几块用来存储的硬盘，以及 timeshift 自身所在目录 `/var/timeshift/` 。
+需要排除的内容通常包括用户目录（`/root/`和 `/home/`），以及资料存储如我这里的 `"/var/data/` 等几块用来存储的硬盘，以及 timeshift 自身所在目录 `/timeshift/` （取决于安装debian时选择的timeshift分区的挂载路径）。
 
 ### 配置自动备份
 
