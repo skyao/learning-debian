@@ -30,11 +30,22 @@ vi ~/.ssh/config
 增加内容为：
 
 ```properties
+# for  github
 Host github.com
-HostName github.com
-User git
-# http proxy
-#ProxyCommand socat - PROXY:127.0.0.1:%h:%p,proxyport=3333
-# socks5 proxy
-ProxyCommand nc -v -x 192.168.0.1:7891 %h %p
+    HostName github.com
+    User git
+    # for HTTP proxy
+    #ProxyCommand socat - PROXY:192.168.0.1:%h:%p,proxyport=7890
+    #ProxyCommand socat - PROXY:192.168.2.1:%h:%p,proxyport=7890
+    #ProxyCommand socat - PROXY:192.168.3.1:%h:%p,proxyport=7890
+    #ProxyCommand socat - PROXY:192.168.5.1:%h:%p,proxyport=7890
+    # for socks5 proxy
+    #ProxyCommand nc -v -x 192.168.0.1:7891 %h %p
+    #ProxyCommand nc -v -x 192.168.2.1:7891 %h %p
+    #ProxyCommand nc -v -x 192.168.3.1:7891 %h %p
+    #ProxyCommand nc -v -x 192.168.5.1:7891 %h %p
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/id_rsa_github
 ```
+
+其他设置参考： https://skyao.io/learning-git/docs/installation/initial/
