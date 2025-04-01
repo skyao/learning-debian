@@ -4,6 +4,6 @@ linkTitle: "开发"
 date: 2024-01-18
 weight: 5000
 description: >
-  在 debian 12.4 上搭建编程开发环境
+  在 debian 12 上搭建编程开发环境
 ---
 
