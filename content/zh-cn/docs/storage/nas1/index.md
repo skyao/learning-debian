@@ -1,11 +1,13 @@
 ---
-title: "用物理机实现的SSD NAS存储"
-linkTitle: "SSD NAS（物理机）"
+title: "[归档]用物理机实现的SSD NAS存储"
+linkTitle: "[归档]SSD NAS（物理机）"
 date: 2024-09-17
-weight: 10
+weight: 100
 description: >
   利用 debian 12 在物理机上实现的 SSD NAS 方案
 ---
+
+归档说明： 为了方便还是安装为 pve 虚拟机了。
 
 ## 构想
 

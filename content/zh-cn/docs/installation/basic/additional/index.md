@@ -7,24 +7,22 @@ description: >
   安装其他软件
 ---
 
-### 安装操作系统相关的软件
+## 系统类
+
+### linux-headers
+
+安装 dkms 和用于 pve 的 linux-headers：
 
 ```bash
-sudo apt install dkms
+sudo apt install -y gcc make dkms
+sudo apt install -y pve-headers-$(uname -r)
+sudo apt install --fix-broken
 ```
 
-这个过程中会自动安装 linux-headers 。
-
-### 常用工具软件
+## 工具类
 
 ```bash
 sudo apt install htop unzip zip curl
-```
-
-网络速度测试软件：
-
-```bash
-sudo apt install iperf iperf3
 ```
 
 ### 修复 locale 报错
@@ -70,3 +68,43 @@ source ~/.zshrc
 参考：
 
 - https://orcacore.com/system-locale-setup-debian-12-bookworm-command-line/
+
+## 网络类
+
+### iperf
+
+```bash
+sudo apt install -y net-tools iperf iperf3
+```
+
+Iperf3 安装时会询问是否系统服务（自动启动），选择 yes，这样方便需要时排查网络。
+
+### sftp server
+
+pve 默认是关闭 sftp 的，需要手动开启：
+
+```bash
+sudo vi /etc/ssh/sshd_config
+```
+
+找到 `Subsystem sftp /usr/lib/openssh/sftp-server` 这一行，注释掉，然后新加一行内容：
+
+```bash
+# Subsystem sftp /usr/lib/openssh/sftp-server
+Subsystem sftp internal-sftp
+```
+
+重启 ssh 服务：
+
+```bash
+sudo /etc/init.d/ssh restart
+```
+
+之后用支持 sftp 的客户端连接即可
+
+### nfs client
+
+```bash
+sudo apt install nfs-common
+```
+

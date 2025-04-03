@@ -1,11 +1,13 @@
 ---
-title: "用虚拟机实现的SSD NAS存储"
-linkTitle: "SSD NAS（虚拟机）"
+title: "[归档]用虚拟机实现的SSD NAS存储"
+linkTitle: "[归档]SSD NAS（虚拟机）"
 date: 2024-01-18
-weight: 2000
+weight: 110
 description: >
   利用 debian 12.4 在 pve 虚拟机中实现的 SSD NAS 方案
 ---
+
+归档说明： nfs on rdma 没能搞定，nfs 访问的速度很一般，放弃。
 
 ## 构想
 

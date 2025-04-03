@@ -1,15 +1,15 @@
 ---
-title: "准备虚拟机"
-linkTitle: "虚拟机"
-date: 2025-03-31
-weight: 10
+title: "创建实例"
+linkTitle: "创建实例"
+date: 2025-04-03
+weight: 100
 description: >
-  创建用于编程开发环境的虚拟机实例
+  基于模板创建开发环境实例
 ---
 
 ## 准备虚拟机
 
-从模版 template-debian12-basic 克隆一个虚拟机，命名为 dev101.
+从模版 template-debian12-dev-vxx 克隆一个虚拟机，命名为 dev101.
 
 开发需要的 cpu 和内存稍大，修改虚拟机参数，cpu 修改为 16核，内存 32g。
 
