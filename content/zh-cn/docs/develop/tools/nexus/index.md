@@ -20,14 +20,14 @@ Nexus Repository Manager 是一个强大的仓库管理工具，支持多种仓�
 创建 nexus 用户专门用于运行 nexus：
 
 ```bash
-sudo useradd -M -d /opt/nexus -s /bin/bash -r nexus
+sudo useradd -M -d /mnt/data/nexus -s /bin/zsh -r nexus
 ```
 
 创建 nexus 目录：
 
 ```bash
-sudo mkdir /opt/nexus
-sudo chown -R nexus:nexus /opt/nexus
+sudo mkdir -p /mnt/data/nexus
+sudo chown -R nexus:nexus /mnt/data/nexus
 ```
 
 ## 下载
@@ -39,7 +39,7 @@ https://help.sonatype.com/en/download-archives---repository-manager-3.html
 从官方下载 nexus 安装包 nexus-unix-x86-64-3.79.0-09.tar.gz：
 
 ```bash
-cd /opt/nexus
+cd /mnt/data/nexus
 sudo wget https://download.sonatype.com/nexus/3/nexus-unix-x86-64-3.79.0-09.tar.gz
 ```
 
@@ -48,9 +48,9 @@ sudo wget https://download.sonatype.com/nexus/3/nexus-unix-x86-64-3.79.0-09.tar.
 解压安装包：
 
 ```bash
-sudo tar -xzf nexus-unix-x86-64-3.79.0-09.tar.gz -C /opt/nexus
+sudo tar -xzf nexus-unix-x86-64-3.79.0-09.tar.gz -C /mnt/data/nexus
 sudo rm -rf nexus-unix-x86-64-3.79.0-09.tar.gz
-sudo chown -R nexus:nexus /opt/nexus
+sudo chown -R nexus:nexus /mnt/data/nexus
 ```
 
 重命名 nexus 目录去掉版本信息（方便以后升级版本）：
@@ -74,7 +74,7 @@ drwxr-xr-x 3 nexus nexus 4096 Mar 29 04:56 sonatype-work
 https://help.sonatype.com/en/install-nexus-repository.html
 
 ```bash
-cd bin
+cd nexus/bin
 ```
 
 这个目录下的 `nexus` 是启动脚本，`nexus.vmoptions` 是 jvm 配置文件。
@@ -107,8 +107,8 @@ After=network.target
 Type=forking
 User=nexus
 Group=nexus
-ExecStart=/opt/nexus/nexus/bin/nexus start
-ExecStop=/opt/nexus/nexus/bin/nexus stop
+ExecStart=/mnt/data/nexus/nexus/bin/nexus start
+ExecStop=/mnt/data/nexus/nexus/bin/nexus stop
 Restart=on-failure
 RestartSec=30
 LimitNOFILE=65536
@@ -150,8 +150,9 @@ Apr 07 10:32:27 debian12 systemd[1]: Started nexus.service - Nexus Repository Ma
 查看 nexus 进程信息：
 
 ```bash 
-ps -ef | grep nexus
-nexus       4736       1 33 10:32 ?        00:01:34 /opt/nexus/nexus/jdk/temurin_17.0.13_11_linux_x86_64/jdk-17.0.13+11/bin/java -server -XX:+UnlockDiagnosticVMOptions -Xms2703m -Xmx2703m -XX:+UnlockDiagnosticVMOptions -XX:+LogVMOutput -XX:LogFile=../sonatype-work/nexus3/log/jvm.log -XX:-OmitStackTraceInFastThrow -Dkaraf.home=. -Dkaraf.base=. -Djava.util.logging.config.file=etc/spring/java.util.logging.properties -Dkaraf.data=../sonatype-work/nexus3 -Dkaraf.log=../sonatype-work/nexus3/log -Djava.io.tmpdir=../sonatype-work/nexus3/tmp -Djdk.tls.ephemeralDHKeySize=2048 --add-reads=java.xml=java.logging --add-opens java.base/java.security=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.naming/javax.naming.spi=ALL-UNNAMED --add-opens java.rmi/sun.rmi.transport.tcp=ALL-UNNAMED --add-exports=java.base/sun.net.www.protocol.http=ALL-UNNAMED --add-exports=java.base/sun.net.www.protocol.https=ALL-UNNAMED --add-exports=java.base/sun.net.www.protocol.jar=ALL-UNNAMED --add-exports=jdk.xml.dom/org.w3c.dom.html=ALL-UNNAMED --add-exports=jdk.naming.rmi/com.sun.jndi.url.rmi=ALL-UNNAMED --add-exports=java.security.sasl/com.sun.security.sasl=ALL-UNNAMED --add-exports=java.base/sun.security.x509=ALL-UNNAMED --add-exports=java.base/sun.security.rsa=ALL-UNNAMED --add-exports=java.base/sun.security.pkcs=ALL-UNNAMED -jar /opt/nexus/nexus/bin/sonatype-nexus-repository-3.79.0-09.jar
+$ ps -ef | grep nexus
+
+nexus      19863       1 99 15:30 ?        00:01:12 /mnt/data/nexus/nexus/jdk/temurin_17.0.13_11_linux_x86_64/jdk-17.0.13+11/bin/java -server -XX:+UnlockDiagnosticVMOptions -Xms2703m -Xmx2703m -XX:+UnlockDiagnosticVMOptions -XX:+LogVMOutput -XX:LogFile=../sonatype-work/nexus3/log/jvm.log -XX:-OmitStackTraceInFastThrow -Dkaraf.home=. -Dkaraf.base=. -Djava.util.logging.config.file=etc/spring/java.util.logging.properties -Dkaraf.data=../sonatype-work/nexus3 -Dkaraf.log=../sonatype-work/nexus3/log -Djava.io.tmpdir=../sonatype-work/nexus3/tmp -Djdk.tls.ephemeralDHKeySize=2048 --add-reads=java.xml=java.logging --add-opens java.base/java.security=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.naming/javax.naming.spi=ALL-UNNAMED --add-opens java.rmi/sun.rmi.transport.tcp=ALL-UNNAMED --add-exports=java.base/sun.net.www.protocol.http=ALL-UNNAMED --add-exports=java.base/sun.net.www.protocol.https=ALL-UNNAMED --add-exports=java.base/sun.net.www.protocol.jar=ALL-UNNAMED --add-exports=jdk.xml.dom/org.w3c.dom.html=ALL-UNNAMED --add-exports=jdk.naming.rmi/com.sun.jndi.url.rmi=ALL-UNNAMED --add-exports=java.security.sasl/com.sun.security.sasl=ALL-UNNAMED --add-exports=java.base/sun.security.x509=ALL-UNNAMED --add-exports=java.base/sun.security.rsa=ALL-UNNAMED --add-exports=java.base/sun.security.pkcs=ALL-UNNAMED -jar /mnt/data/nexus/nexus/bin/sonatype-nexus-repository-3.79.0-09.jar
 ```
 
 ## 访问
@@ -165,7 +166,7 @@ http://192.168.0.246:8081/
 登录时使用帐号 `admin` 和初始管理员密码，初始管理员密码位于：
 
 ```bash
-sudo vi /opt/nexus/sonatype-work/nexus3/admin.password
+sudo vi /mnt/data/nexus/sonatype-work/nexus3/admin.password
 ```
 
 初始管理员密码会是一个类似这样的字符串：
@@ -235,8 +236,14 @@ nexus 安装后自带的默认仓库：
 需要自己创建，参见后面的章节。
 
 - go module 仓库
+- rust cargo 仓库
 - npm 仓库
 - pypi 仓库
+
+## 准备用户
+
+新建一个 deployment 用户，专门用于部署。
+
 
 
 

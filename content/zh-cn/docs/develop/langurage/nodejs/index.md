@@ -153,6 +153,8 @@ home=https://npmmirror.com
 registry=https://r.cnpmjs.org/
 ```
 
+> 备注： home 现在可以不用设置了。
+
 ### 配置 npm 镜像源
 
 也可以手工修改 `~/.npmrc` 文件：
@@ -164,7 +166,6 @@ vi ~/.npmrc
 添加以下内容：
 
 ```bash
-home=https://cnpmjs.org
 registry=https://r.cnpmjs.org/
 ```
 
@@ -193,8 +194,7 @@ vi ~/.npmrc
 设置为以下内容：
 
 ```bash
-home=http://192.168.0.246:8081
-registry=http://192.168.0.246:8081/repository/npm-public/
+registry=http://192.168.3.91:8081/repository/npm-public/
 ```
 
 ### 验证代理

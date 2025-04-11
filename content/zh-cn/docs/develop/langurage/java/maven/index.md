@@ -118,49 +118,45 @@ vi settings.xml
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
 
-    <!-- 服务器认证信息 -->
     <servers>
-        <!-- 用于发布到 hosted 仓库的认证 -->
         <server>
             <id>maven-releases</id>
             <username>deployment</username>
-            <password>12345678</password>
+            <password>xxxxxxxx</password>
         </server>
         <server>
             <id>maven-snapshots</id>
             <username>deployment</username>
-            <password>12345678</password>
+            <password>xxxxxxxx</password>
         </server>
     </servers>
    
-    <!-- 镜像配置 -->
     <mirrors>
         <mirror>
             <id>nexus-mirror</id>
             <name>Nexus Repository</name>
-            <url>http://192.168.0.246:8081/repository/maven-public/</url>
+            <url>http://192.168.3.91:8081/repository/maven-public/</url>
             <mirrorOf>*</mirrorOf>
         </mirror>
     </mirrors>
     
-    <!-- 仓库配置 -->
     <profiles>
         <profile>
             <id>nexus</id>
             <properties>
-                <altSnapshotDeploymentRepository>maven-snapshots::default::http://192.168.0.246:8081/repository/maven-snapshots/</altSnapshotDeploymentRepository>
-                <altReleaseDeploymentRepository>maven-releases::default::http://192.168.0.246:8081/repository/maven-releases/</altReleaseDeploymentRepository>
+                <altSnapshotDeploymentRepository>maven-snapshots::default::http://192.168.3.91:8081/repository/maven-snapshots/</altSnapshotDeploymentRepository>
+                <altReleaseDeploymentRepository>maven-releases::default::http://192.168.3.91:8081/repository/maven-releases/</altReleaseDeploymentRepository>
             </properties>
             <repositories>
                 <repository>
                     <id>maven-releases</id>
-                    <url>http://192.168.0.246:8081/repository/maven-releases/</url>
+                    <url>http://192.168.3.91:8081/repository/maven-releases/</url>
                     <releases><enabled>true</enabled></releases>
                     <snapshots><enabled>false</enabled></snapshots>
                 </repository>
                 <repository>
                     <id>maven-snapshots</id>
-                    <url>http://192.168.0.246:8081/repository/maven-snapshots/</url>
+                    <url>http://192.168.3.91:8081/repository/maven-snapshots/</url>
                     <releases><enabled>false</enabled></releases>
                     <snapshots><enabled>true</enabled></snapshots>
                 </repository>
