@@ -228,6 +228,8 @@ nexus 安装后自带的默认仓库：
 - nuget-org-proxy 仓库： 这是一个 proxy 仓库，代理了 https://api.nuget.org/v3/index.json 仓库
 - nuget-group 仓库： 这是一个 group 仓库，将 nuget-hosted 和 nuget-org-proxy 仓库聚合在一起。
 
+目前不做 .net 开发，所以 nuget 仓库暂时用不上，删除。
+
 ### 其他仓库
 
 需要自己创建，参见后面的章节。

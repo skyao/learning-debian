@@ -117,28 +117,26 @@ vi settings.xml
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
-    
+
     <!-- 服务器认证信息 -->
     <servers>
         <!-- 用于发布到 hosted 仓库的认证 -->
         <server>
-            <id>nexus-hosted</id>
+            <id>maven-releases</id>
             <username>deployment</username>
-            <password>deployment123</password>
+            <password>12345678</password>
         </server>
-        
-        <!-- 用于从代理仓库下载的认证（如果需要） -->
         <server>
-            <id>nexus-proxy</id>
-            <username>readonly</username>
-            <password>readonly123</password>
+            <id>maven-snapshots</id>
+            <username>deployment</username>
+            <password>12345678</password>
         </server>
     </servers>
-    
+   
     <!-- 镜像配置 -->
     <mirrors>
         <mirror>
-            <id>nexus</id>
+            <id>nexus-mirror</id>
             <name>Nexus Repository</name>
             <url>http://192.168.0.246:8081/repository/maven-public/</url>
             <mirrorOf>*</mirrorOf>
@@ -149,6 +147,10 @@ vi settings.xml
     <profiles>
         <profile>
             <id>nexus</id>
+            <properties>
+                <altSnapshotDeploymentRepository>maven-snapshots::default::http://192.168.0.246:8081/repository/maven-snapshots/</altSnapshotDeploymentRepository>
+                <altReleaseDeploymentRepository>maven-releases::default::http://192.168.0.246:8081/repository/maven-releases/</altReleaseDeploymentRepository>
+            </properties>
             <repositories>
                 <repository>
                     <id>maven-releases</id>
@@ -163,23 +165,9 @@ vi settings.xml
                     <snapshots><enabled>true</enabled></snapshots>
                 </repository>
             </repositories>
-            
-            <pluginRepositories>
-                <pluginRepository>
-                    <id>maven-releases</id>
-                    <url>http://192.168.0.246:8081/repository/maven-releases/</url>
-                    <releases><enabled>true</enabled></releases>
-                    <snapshots><enabled>false</enabled></snapshots>
-                </pluginRepository>
-                <pluginRepository>
-                    <id>maven-snapshots</id>
-                    <url>http://192.168.0.246:8081/repository/maven-snapshots/</url>
-                    <releases><enabled>false</enabled></releases>
-                    <snapshots><enabled>true</enabled></snapshots>
-                </pluginRepository>
-            </pluginRepositories>
         </profile>
     </profiles>
+
     
     <activeProfiles>
         <activeProfile>nexus</activeProfile>
@@ -215,23 +203,67 @@ rm -rf ~/.m2/repository
 
 ### 验证 nexus hosted 仓库的上传功能
 
-检查项目的 pom.xml 中正确指定了分发仓库：
+指定 maven deploy 时要用的分发仓库的方式有三种：
+
+1. 在 pom.xml 中配置分发仓库
+
+    ```xml
+    <distributionManagement>
+    <snapshotRepository>
+        <id>maven-snapshots</id>
+        <url>http://192.168.0.246:8081/repository/maven-snapshots/</url>
+    </snapshotRepository>
+    <repository>
+        <id>maven-releases</id>
+        <url>http://192.168.0.246:8081/repository/maven-releases/</url>
+    </repository>
+    </distributionManagement>
+    ```
+
+    这个方式要在每个项目的 pom.xml 中配置分发仓库，如果项目很多，配置起来比较麻烦。不推荐。
+
+2. 在命令行中强制指定仓库
+
+    ```bash
+    mvn deploy -DaltDeploymentRepository=maven-snapshots::default::http://192.168.0.246:8081/repository/maven-snapshots/
+    ```
+
+    这个方式每次执行 maven deploy 命令时都要指定仓库，也嫌麻烦。不推荐。
+
+3. 在 settings.xml 中配置分发仓库
+
+    在配置 profile 时，可以设置 altSnapshotDeploymentRepository 和 altReleaseDeploymentRepository 属性，指定分发仓库。
+
+    ```xml
+    <profiles>
+        <profile>
+            <id>nexus</id>
+            <properties>
+                <altSnapshotDeploymentRepository>maven-snapshots::default::http://192.168.0.246:8081/repository/maven-snapshots/</altSnapshotDeploymentRepository>
+                <altReleaseDeploymentRepository>maven-releases::default::http://192.168.0.246:8081/repository/maven-releases/</altReleaseDeploymentRepository>
+            </properties>
+            <repositories>
+            </repositories>
+        </profile>
+    </profiles>
+    ```
+
+    这样执行 maven deploy 命令时，会使用配置的分发仓库。非常方便。
+
+注意： 要在项目的 pom.xml 中配置使用 maven-deploy-plugin 插件，不要使用 nexus-staging-maven-plugin。
 
 ```xml
-<distributionManagement>
-  <snapshotRepository>
-    <id>nexus-snapshots</id>
-    <url>http://192.168.0.246:8081/repository/maven-snapshots/</url>
-  </snapshotRepository>
-  <repository>
-    <id>nexus-releases</id>
-    <url>http://192.168.0.246:8081/repository/maven-releases/</url>
-  </repository>
-</distributionManagement>
+<project>
+    ......
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.1.4</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>
 ```
 
-或者在命令行中强制指定仓库：
-
-```bash
-mvn deploy -DskipTests -Djacoco.skip=true -DaltSnapshotDeploymentRepository=nexus-snapshots::default::http://192.168.0.246:8081/repository/maven-snapshots/
-```
