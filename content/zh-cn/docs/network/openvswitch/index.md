@@ -1,10 +1,10 @@
 ---
-title: "网卡片上卸载"
-linkTitle: "片上卸载"
+title: "openvswitch软交换"
+linkTitle: "openvswitch"
 date: 2024-01-18
-weight: 1100
+weight: 30
 description: >
-  在 debian 12 下利用cx5网卡的片上卸载功能降低cpu占用
+  在 debian 12 下搭建 openvswitch  软交换，并利用cx5网卡的片上卸载功能降低cpu占用
 ---
 
 ## 背景

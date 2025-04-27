@@ -1,8 +1,8 @@
 ---
-title: "用linux bridge实现软交换"
-linkTitle: "linux bridge软交换"
+title: "linux bridge 软交换"
+linkTitle: "linux bridge"
 date: 2024-09-16
-weight: 1000
+weight: 20
 description: >
   在 debian12 下利用 linux bridge 实现软交换
 ---
