@@ -35,6 +35,6 @@ lspci | grep Non-Volatile
 
 然后配置网络共享： 
 
-- nfs server ： 参考 [用虚拟机实现的SSD NAS存储]({{< relref "../../../storage/devserver91/" >}})
-- sftp server： 参考 [安装 SFTP 服务器]({{< relref "../../../installation/basic/additional/#sftp-server" >}})
+- nfs server ： 参考 [用虚拟机实现的SSD NAS存储]({{< relref "../../../../storage/devserver91/" >}})
+- sftp server： 参考 [安装 SFTP 服务器]({{< relref "../../../../installation/basic/additional/#sftp-server" >}})
 
