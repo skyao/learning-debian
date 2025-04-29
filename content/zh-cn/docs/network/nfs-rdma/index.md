@@ -103,6 +103,25 @@ iperf -c 192.168.119.1 -i 1 -t 20 -P 4
 
 此时 nfs 服务器端和客户端之间的网络连接已经没有问题了，可以开始配置 nfs 了。
 
+由于启用了两块网卡，有时默认网络路由会出问题，导致无法访问外网。此时需要检查网络路由：
+
+```bash
+$ ip route
+
+default via 192.168.3.1 dev enp1s0f1np1 onlink 
+192.168.3.0/24 dev enp6s18 proto kernel scope link src 192.168.3.227 
+192.168.119.0/24 dev enp1s0f1np1 proto kernel scope link src 192.168.119.1
+```
+
+可以看到默认路由是 192.168.3.1， 但使用的网卡是 enp1s0f1np1， 而不是 enp6s18。
+
+此时需要手动设置默认路由：
+
+```bash
+sudo ip route del default
+sudo ip route add default dev enp6s18
+```
+
 ## 安装 nfsrdma
 
 ```bash
@@ -167,35 +186,6 @@ N: Download is performed unsandboxed as root as file '/home/sky/temp/mlnx-nfsrdm
 
 重启。
 
-总结，在安装 nfsrdma 时，包含了以下重要模块：
-
-- rpcrdma
-- svcrdma
-- xprtrdma
-
-另外在驱动安装时， 也包含了和 rdma 相关的模块：
-
-- rdma-core
-- rdmacm-utils
-
-### 验证模块加载
-
-运行以下命令检查模块是否已加载：
-
-```
-lsmod | grep -E "rpcrdma|svcrdma|xprtrdma"
-```
-
-如果无输出，手动加载模块：
-
-```bash
-sudo modprobe rpcrdma
-sudo modprobe svcrdma
-sudo modprobe xprtrdma
-```
-
-------
-
 ### 检查 DKMS 状态
 
 确认 DKMS 模块已注册：
@@ -243,7 +233,7 @@ mlx5_core            2441216  1 mlx5_ib
 mlx_compat             20480  15 rdma_cm,ib_ipoib,mlxdevm,rpcrdma,mlxfw,xprtrdma,iw_cm,svcrdma,ib_umad,ib_core,rdma_ucm,ib_uverbs,mlx5_ib,ib_cm,mlx5_core
 ```
 
-如果无输出，手动加载模块：
+~~如果没有，手动加载模块~~（实际操作下来发现不手工加载也可以，系统会自动加载）：
 
 ```bash
 sudo modprobe rpcrdma
@@ -420,15 +410,7 @@ nfs server 需要开启 rdma 支持：
 sudo vi /etc/nfs.conf
 ```
 
-~~增加内容~~（备注：实践证明这个来自deepseek的指导意见是错误的，不要这么设置）：
-
-```bash
-[nfsrdma]
-enable=1
-port=20049
-```
-
-但也有资料说是修改 /etc/nfs.conf 文件的 [nfsd] 部分（备注：实践证明是正确的，但是一定要把 nfs 版本那几行也放开）：
+修改 /etc/nfs.conf 文件的 [nfsd] 部分（备注：尽量要把 nfs 版本那几行也放开，限制为只提供4.2版本）：
 
 ```bash
 [nfsd]
@@ -457,19 +439,17 @@ rdma-port=20049
 sudo systemctl restart nfs-server
 ```
 
-验证 NFS RDMA 服务是否监听：  
+然后检查 nfsd 的监听端口，验证 rdma 是否生效：
 
 ```bash
-# 备注：这个验证方式是错误的（来自deepseek）
-sudo rpcinfo -p | grep 20049
-# 检查端口的其他方式
-sudo ss -tulnp | grep ':20049'
-# sudo apt install net-tools
-sudo netstat -tulnp | grep ':20049'
-sudo lsof -i :20049
+sudo cat /proc/fs/nfsd/portlist                    
+rdma 20049
+rdma 20049
+tcp 2049
+tcp 2049
 ```
 
-应该说是 20049 不是 tcp 端口吧？
+如果看到 rdma 20049 端口，说明 rdma 配置成功。反之如果没有看到 rdma 20049 端口，说明 rdma 配置失败，需要检查前面的配置。
 
 ## 配置 nfs client（rdma）
 
@@ -481,7 +461,7 @@ sudo lsof -i :20049
 lsmod | grep -E "rpcrdma|svcrdma|xprtrdma|ib_core|mlx5_ib"
 ```
 
-如果没有，手动加载模块：
+~~如果没有，手动加载模块~~（实际操作下来发现不手工加载也可以，系统会自动加载）：
 
 ```bash
 sudo modprobe rpcrdma
@@ -552,38 +532,3 @@ sudo dd if=./test-100g.img of=/dev/null bs=1G count=100 iflag=dsync
 | nfs 挂载(non-rdma) | 1.0 GB/s        | 2.5 GB/s        |
 | nfs 挂载(rdma)     | 1.0 GB/s        | 2.2 GB/s        |
 
-
-
-
-## 配置自动加载
-
-### nfs server 端
-
-```bash
-echo "rpcrdma" | sudo tee -a /etc/modules-load.d/rdma.conf
-```
-
-然后更新 initramfs：
-
-```bash
-sudo update-initramfs -u  
-```
-
-### nfs client 端
-
-```bash
-echo "rpcrdma" | sudo tee -a /etc/modules-load.d/rdma.conf
-```
-
-然后更新 initramfs：
-
-```bash
-sudo update-initramfs -u  
-```
-
-
-## 参考文件
-
-- [NFS RDMA 配置指南](https://www.mellanox.com/products/infiniband-drivers/linux/mlnx-ofed/nfs-rdma)
-
-- [配置基于RDMA的NFS服务](https://vqiu.cn/nfs-rdma/): 资料有点老，基于 ubuntu 18.04 / linux 5.4 内核，cx3-pro网卡
