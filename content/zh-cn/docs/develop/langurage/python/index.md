@@ -11,3 +11,9 @@ description: >
 
 https://skyao.io/learning-python/docs/installation/linux/
 
+包括使用 pyevn 管理多个 python 版本，配置 pip 镜像源和使用 nexus 代理仓库。
+
+
+
+
+

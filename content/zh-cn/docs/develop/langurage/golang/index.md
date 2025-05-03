@@ -11,3 +11,6 @@ description: >
 
 https://skyao.io/learning-golang/docs/develop/installation/
 
+包括安装 golang 并配置 nexus 的 golang proxy 仓库来加速构建。
+
+
