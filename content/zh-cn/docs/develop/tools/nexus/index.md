@@ -11,7 +11,7 @@ Nexus Repository Manager 是一个强大的仓库管理工具，支持多种仓�
 
 > 备注： 之所以选择 nexus 而不是 artifactory，是因为 nexus 是开源的，而 artifactory 是闭源+收费的。
 
-以下以 nexus 3.79.0-09 为例，介绍如何安装和配置 nexus。
+以下以 nexus 3.79.1-04 为例，介绍如何安装和配置 nexus。
 
 参考官方文档： https://help.sonatype.com/en/sonatype-nexus-repository.html
 
@@ -36,11 +36,11 @@ sudo chown -R nexus:nexus /mnt/data/nexus
 
 https://help.sonatype.com/en/download-archives---repository-manager-3.html
 
-从官方下载 nexus 安装包 nexus-unix-x86-64-3.79.0-09.tar.gz：
+从官方下载 nexus 安装包 nexus-3.79.1-04：
 
 ```bash
 cd /mnt/data/nexus
-sudo wget https://download.sonatype.com/nexus/3/nexus-unix-x86-64-3.79.0-09.tar.gz
+sudo wget https://download.sonatype.com/nexus/3/nexus-3.79.1-04-linux-x86_64.tar.gz
 ```
 
 > 备注： 这个版本是自带 jdk 的，因此不需要单独安装 jdk。自带的 jdk 在 `nexus/jdk/temurin_17.0.13_11_linux_x86_64` 目录下。
@@ -48,15 +48,15 @@ sudo wget https://download.sonatype.com/nexus/3/nexus-unix-x86-64-3.79.0-09.tar.
 解压安装包：
 
 ```bash
-sudo tar -xzf nexus-unix-x86-64-3.79.0-09.tar.gz -C /mnt/data/nexus
-sudo rm -rf nexus-unix-x86-64-3.79.0-09.tar.gz
+sudo tar -xzf nexus-3.79.1-04-linux-x86_64.tar.gz -C /mnt/data/nexus
+sudo rm -rf nexus-3.79.1-04-linux-x86_64.tar.gz
 sudo chown -R nexus:nexus /mnt/data/nexus
 ```
 
 重命名 nexus 目录去掉版本信息（方便以后升级版本）：
 
 ```bash
-sudo mv nexus-3.79.0-09 nexus
+sudo mv nexus-3.79.1-04 nexus
 ```
 
 得到如下目录：
@@ -159,7 +159,7 @@ nexus      19863       1 99 15:30 ?        00:01:12 /mnt/data/nexus/nexus/jdk/te
 
 访问地址：
 
-http://192.168.0.246:8081/
+http://192.168.3.19:8081/
 
 第一次启动会比较慢，要耐心等待几十秒中。
 
