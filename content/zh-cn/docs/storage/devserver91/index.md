@@ -231,62 +231,105 @@ Jan 29 20:40:15 skynas3 exportfs[1422]: exportfs: can't open /etc/exports for re
 Jan 29 20:40:16 skynas3 systemd[1]: Finished nfs-server.service - NFS server and services.
 ```
 
-### 配置 nfs v4
+### 设置 nfs 版本支持
 
-修改 nfs-kernel-server 的配置：
-
-```bash
-sudo vi /etc/default/nfs-kernel-server
-```
-
-修改内容:
-
-```bash
-# 这行新增
-RPCNFSDOPTS="-N 2 -N 3"
-# 这行已经存在，修改内容
-RPCMOUNTDOPTS="--manage-gids -N 2 -N 3"
-# 其他不动
-
-#修改或添加以下行：
-RPCNFSDOPTS="--nfs-version 4"
-```
-
-配置 NFSv4 根目录， 
-
-```bash
-sudo vi /etc/idmapd.conf
-```
-
-确保有以下配置：
-
-```properties
-[General]
-Domain = yourdomain.com  # 替换为你的域名或保留默认
-
-[Translation]
-Method = nsswitch
-```
-
-重启 nfs server
-
-```bash
-sudo systemctl restart nfs-kernel-server
-sudo systemctl enable nfs-kernel-server
-```
-
-
-
-验证 NFS 版本:
+查看目前服务器端支持的 nfs 版本：
 
 ```bash
 sudo cat /proc/fs/nfsd/versions
+```
+
+默认情况下，nfs server 支持的 nfs 版本为：
+
+```bash
 +3 +4 +4.1 +4.2
 ```
 
-备注： 按说应该没有 +3, 即不支持 nfs v3, 但是没有设置出来。
+通常我们只需要保留 nfs 4.2 版本，其他版本都删除：
 
+```bash
+sudo vi /etc/nfs.conf
+```
 
+将默认的 nfsd：
+
+```bash
+[nfsd]
+# debug=0
+# threads=8
+# host=
+# port=0
+# grace-time=90
+# lease-time=90
+# udp=n
+# tcp=y
+# vers3=y
+# vers4=y
+# vers4.0=y
+# vers4.1=y
+# vers4.2=y
+# rdma=n
+# rdma-port=20049
+```
+
+修改为:
+
+```bash
+[nfsd]
+# debug=0
+threads=32
+# host=
+# port=0
+# grace-time=90
+# lease-time=90
+# udp=n
+# tcp=y
+vers3=n
+vers4=y
+vers4.0=n
+vers4.1=n
+vers4.2=y
+# rdma=n
+# rdma-port=20049
+```
+
+顺便把 nfs 线程数量从默认的 8 修改为 32。
+
+重启 nfs-kernel-server：
+
+```bash
+sudo systemctl restart nfs-kernel-server
+```
+
+然后验证 nfs 版本：
+
+```bash
+sudo cat /proc/fs/nfsd/versions
+```
+
+输出为：
+
+```bash
+-3 +4 -4.0 -4.1 +4.2
+```
+
+注意： +4 是必须保留的，只有先设置 +4 版本，才能设置 4.0/4.1/4.2 版本，如果 -4 则 4.0/4.1/4.2 版本都会不支持。
+
+也可以通过 rpcinfo 命令查看 nfs 版本：
+
+```bash
+rpcinfo -p localhost
+```
+
+输出为：
+
+```bash
+   program vers proto   port  service
+    ......
+    100003    4   tcp   2049  nfs
+```
+
+这里的 4 代表 nfs 4.x 版本，但是没法区分 4.0/4.1/4.2 版本。
 
 ### 配置 nfs export
 
