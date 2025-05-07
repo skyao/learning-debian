@@ -159,7 +159,7 @@ nexus      19863       1 99 15:30 ?        00:01:12 /mnt/data/nexus/nexus/jdk/te
 
 访问地址：
 
-http://192.168.3.19:8081/
+http://192.168.3.91:8081/
 
 第一次启动会比较慢，要耐心等待几十秒中。
 
@@ -187,17 +187,29 @@ sudo vi /mnt/data/nexus/sonatype-work/nexus3/admin.password
 
 ### jvm 内存配置
 
-修改 `nexus/bin/nexus.vmoptions` 文件，增加如下内容：
+```bash
+sudo vi /mnt/data/nexus/nexus/bin/nexus.vmoptions
+```
+
+修改 `nexus.vmoptions` 文件，增加如下内容：
 
 ```properties
--Xms1g
--Xmx2g
+# 默认Xms/Xmx是2703m/2703m
+-Xms2703m
+-Xmx2703m
+# 增加直接内存大小
 -XX:MaxDirectMemorySize=2g
 ```
 
 ### 端口配置
 
-默认端口是 8081，可以找到 `nexus/etc/nexus-default.properties` 文件，修改 `application-port` 端口：
+默认端口是 8081，可以
+
+```bash
+sudo vi /mnt/data/nexus/nexus/etc/nexus-default.properties
+```
+
+找到 `nexus-default.properties` 文件，修改 `application-port` 端口：
 
 ```properties
 application-port=8081
@@ -229,7 +241,7 @@ nexus 安装后自带的默认仓库：
 - nuget-org-proxy 仓库： 这是一个 proxy 仓库，代理了 https://api.nuget.org/v3/index.json 仓库
 - nuget-group 仓库： 这是一个 group 仓库，将 nuget-hosted 和 nuget-org-proxy 仓库聚合在一起。
 
-目前不做 .net 开发，所以 nuget 仓库暂时用不上，删除。
+目前不做 .net 开发，所以 nuget 仓库暂时用不上，都删除。
 
 ### 其他仓库
 

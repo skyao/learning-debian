@@ -15,7 +15,7 @@ description: >
 
 ```bash
 sudo apt install -y gcc make dkms
-sudo apt install -y pve-headers-$(uname -r)
+sudo apt install -y linux-headers-$(uname -r)
 sudo apt install --fix-broken
 ```
 
@@ -107,4 +107,65 @@ sudo /etc/init.d/ssh restart
 ```bash
 sudo apt install nfs-common
 ```
+
+### smb server
+
+安装 samba 服务：
+
+```bash
+sudo apt install samba
+```
+
+假设要共享的目录是 `/mnt/data/shared`， 则需要先创建该目录：
+
+```bash
+sudo mkdir -p /mnt/data/shared
+```
+
+设置目录权限：
+
+```bash
+sudo chmod -R 777 /mnt/data/shared
+```
+
+设置目录所有者：
+
+```bash
+sudo chown -R nobody:nogroup /mnt/data/shared
+```
+
+配置 samba 服务：
+
+```bash
+sudo vi /etc/samba/smb.conf
+```
+
+在文件末尾添加以下内容:
+
+```properties
+[shared]
+   comment = Shared Folder
+   path = /mnt/data/shared
+   browseable = yes
+   read only = no
+   guest ok = yes 
+   create mask = 0777
+   directory mask = 0777
+```
+
+并删除这个文件中 [home] 和 [printers] 这两段内容，否则在smb 共享文件列表中会出现 nobody 和 printers 两个目录。
+
+启动 samba 服务并设置为开机启动：
+
+```bash
+sudo systemctl start smbd
+sudo systemctl enable smbd
+```
+
+之后就可以访问了，路径为：
+
+- linux 系统：`smb://192.168.3.175`
+- windows 系统：`\\192.168.3.175`
+
+
 

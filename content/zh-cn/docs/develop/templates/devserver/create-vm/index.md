@@ -23,11 +23,13 @@ https://skyao.io/learning-docker/docs/repository/habor/
 
 - sdkman
 - nexus
-- jdk17 / maven
+- jdk / maven
 - npm
 - pypi
 - go module
 - rust cargo
+
+
 
 
 

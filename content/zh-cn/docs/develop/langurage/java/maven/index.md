@@ -72,7 +72,8 @@ source ~/.sdkman/bin/sdkman-init.sh
 验证 maven 安装版本：
 
 ```bash
-mvn --version
+$ mvn --version
+
 Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
 Maven home: /home/sky/.sdkman/candidates/maven/current
 Java version: 17.0.14, vendor: Azul Systems, Inc., runtime: /home/sky/.sdkman/candidates/java/17.0.14-zulu
@@ -263,3 +264,46 @@ rm -rf ~/.m2/repository
 </project>
 ```
 
+### demo 验证
+
+```bash
+mkdir -p ~/work/code/temp/java-demo
+cd ~/work/code/temp/java-demo
+
+
+# 现在不能直接从 github 下载了？
+#wget https://github.com/skyao/learning-debian/blob/main/content/zh-cn/docs/develop/langurage/java/maven/images/maven-deploy-demo.tar
+
+# scp 传输文件
+scp ./maven-deploy-demo.tar sky@192.168.3.91:/home/sky/work/code/temp/java-demo
+
+tar -xvf maven-deploy-demo.tar
+cd maven-deploy-demo
+
+mvn deploy
+```
+
+输出为：
+
+```bash
+......
+Uploading to maven-snapshots: http://192.168.3.91:8081/repository/maven-snapshots/com/example/maven-deploy-demo/1.0.0-SNAPSHOT/maven-deploy-demo-1.0.0-20250507.023145-1.pom
+Uploaded to maven-snapshots: http://192.168.3.91:8081/repository/maven-snapshots/com/example/maven-deploy-demo/1.0.0-SNAPSHOT/maven-deploy-demo-1.0.0-20250507.023145-1.pom (887 B at 25 kB/s)
+Uploading to maven-snapshots: http://192.168.3.91:8081/repository/maven-snapshots/com/example/maven-deploy-demo/1.0.0-SNAPSHOT/maven-deploy-demo-1.0.0-20250507.023145-1.jar
+Uploaded to maven-snapshots: http://192.168.3.91:8081/repository/maven-snapshots/com/example/maven-deploy-demo/1.0.0-SNAPSHOT/maven-deploy-demo-1.0.0-20250507.023145-1.jar (2.2 kB at 118 kB/s)
+Downloading from maven-snapshots: http://192.168.3.91:8081/repository/maven-snapshots/com/example/maven-deploy-demo/maven-metadata.xml
+Uploading to maven-snapshots: http://192.168.3.91:8081/repository/maven-snapshots/com/example/maven-deploy-demo/1.0.0-SNAPSHOT/maven-metadata.xml
+Uploaded to maven-snapshots: http://192.168.3.91:8081/repository/maven-snapshots/com/example/maven-deploy-demo/1.0.0-SNAPSHOT/maven-metadata.xml (778 B at 46 kB/s)
+Uploading to maven-snapshots: http://192.168.3.91:8081/repository/maven-snapshots/com/example/maven-deploy-demo/maven-metadata.xml
+Uploaded to maven-snapshots: http://192.168.3.91:8081/repository/maven-snapshots/com/example/maven-deploy-demo/maven-metadata.xml (288 B at 19 kB/s)
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  16.809 s
+[INFO] Finished at: 2025-05-07T10:32:01+08:00
+[INFO] ------------------------------------------------------------------------
+```
+
+在 nexus 的 maven-snapshots 仓库中可以看到刚刚上传的 maven-deploy-demo 的 pom 和 jar 文件：
+
+![](images/nexus-repo.png)

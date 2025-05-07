@@ -24,7 +24,7 @@ sdk list java
 虚拟线程正式发布，分代 ZGC、序列集合等新特性。
 
 ```bash
-sdk install java 21.0.6-zulu
+sdk install java 21.0.7-zulu
 ```
 
 ### jdk17（LTS）
@@ -32,7 +32,7 @@ sdk install java 21.0.6-zulu
 包含密封类（Sealed Classes）、模式匹配等新特性。
 
 ```bash
-sdk install java 17.0.14-zulu
+sdk install java 17.0.15-zulu
 ```
 
 ### jdk11（LTS）
@@ -40,7 +40,7 @@ sdk install java 17.0.14-zulu
 移除 Java EE 模块，引入 HTTP Client API、局部变量类型推断（var）等
 
 ```bash
-sdk install java 11.0.26-zulu
+sdk install java 11.0.27-zulu
 ```
 
 ### jdk8（LTS）
@@ -48,7 +48,7 @@ sdk install java 11.0.26-zulu
 jdk8 是最广泛使用的版本，支持 Lambda 表达式、Stream API 等。
 
 ```bash
-sdk install java 8.0.442-zulu
+sdk install java 8.0.452-zulu
 ```
 
 ## 使用 jdk
