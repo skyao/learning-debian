@@ -79,6 +79,59 @@ sudo apt install -y net-tools iperf iperf3
 
 Iperf3 安装时会询问是否系统服务（自动启动），选择 yes，这样方便需要时排查网络。
 
+### nc
+
+debian 12 自带的 nc 是 netcat-traditional 包提供的版本:
+
+```bash
+$ nc -h 
+
+[v1.10-47]
+connect to somewhere:	nc [-options] hostname port[s] [ports] ... 
+listen for inbound:	nc -l -p port [-options] [hostname] [port]
+```
+
+而我一直在 ubuntu / linux mint 中用的 nc 是 netcat-openbsd 包提供的版本:
+
+```bash
+$ nc -h    
+
+OpenBSD netcat (Debian patchlevel 1.226-1ubuntu2)
+usage: nc [-46CDdFhklNnrStUuvZz] [-I length] [-i interval] [-M ttl]
+	  [-m minttl] [-O length] [-P proxy_username] [-p source_port]
+	  [-q seconds] [-s sourceaddr] [-T keyword] [-V rtable] [-W recvlimit]
+	  [-w timeout] [-X proxy_protocol] [-x proxy_address[:port]]
+	  [destination] [port]
+```
+
+而我在设置 git 代理时，通常会使用 `nc` 来设置，类似：
+
+```bash
+ProxyCommand nc -v -x 192.168.3.1:7891 %h %p
+```
+
+这个命令在 netcat-traditional 下会报错：
+
+```bash
+nc: invalid option -- 'x'
+nc -h for help
+```
+
+因此需要将默认的 `netcat-traditional` 包替换为 `netcat-openbsd` 包：
+
+```bash
+sudo apt remove -y netcat-traditional
+sudo apt install -y netcat-openbsd
+```
+
+### 安装 socat
+
+debian12 下没有 socat 命令（用于 git http代理），需要安装：
+
+```bash
+sudo apt install -y socat
+```
+
 ### sftp server
 
 pve 默认是关闭 sftp 的，需要手动开启：

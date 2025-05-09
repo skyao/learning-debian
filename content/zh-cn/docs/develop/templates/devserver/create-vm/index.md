@@ -1,35 +1,36 @@
 ---
-title: "搭建服务器"
-linkTitle: "搭建"
+title: "创建虚拟机"
+linkTitle: "创建虚拟机"
 date: 2025-04-10
 weight: 20
 description: >
-  搭建服务器：容器和容器镜像仓库，nexus和代理仓库
+  创建使用 devserver 模板的开发服务器虚拟机
 ---
 
-## 容器
+## 创建虚拟机
 
-安装 docker 和 docker-compose：
+devserver 模板实际只会有两个虚拟机实例：
 
-https://skyao.io/learning-docker/docs/installation/debian12/
+- devserver91： ip 192.168.3.91, 用于苏州汾湖的开发环境
+- devserver92： ip 192.168.0.92, 用于广州南沙的开发环境
 
-安装 docker 镜像仓库 harbor ：
+由于两个虚拟机都使用到直通的两块 900g 三星 pm983a ssd，因此无法简单的从模板克隆就能自动恢复所有的数据。
 
-https://skyao.io/learning-docker/docs/repository/habor/
+实践中，先按照 devserver91 的配置搭建好虚拟机，然后直接使用直通的 ssd 就能正常工作了。
 
-## nexus 和代理仓库
+devserver92 是将模板（去除直通的两块 ssd）传送到广州南沙，然后从模板克隆虚拟机，再直通两块空的 ssd 硬盘。
 
-安装 nexus 并配置各种语言的代理仓库，包括：
+## 配置 devserver91
 
-- sdkman
-- nexus
-- jdk / maven
-- npm
-- pypi
-- go module
-- rust cargo
+几乎不需要配置。
 
+## 配置 devserver92
 
+原则上需要按照搭建模板的方式， 重头走一遍所有流程来完成 devserver92 的配置。
+
+中间很多步骤是可以重用之前已有的资料和信息，但是需要检查每一个步骤，看是否有需要改动的地方，最重要的改动就是这个机器的 ip 地址从 devserver91 的 192.168.3.91 修改为 devserver92 的 192.168.0.92。
+
+而这个 ip 地址的修改，散落在很多地方， 为了不疏漏，只能重新走一遍完成的流程，好在大部分操作都还继续有效，只是修改个别配置文件更改 ip 地址即可。
 
 
 

@@ -19,6 +19,14 @@ sdk list java
 
 我偏好使用 zulu 的 openjdk 版本，所以这里以 zulu 为例。
 
+### jdk24（non-LTS）
+
+追踪一下最新版本的 jdk：
+
+```bash
+sdk install java 24.0.1-zulu
+```
+
 ### jdk21（LTS）
 
 虚拟线程正式发布，分代 ZGC、序列集合等新特性。

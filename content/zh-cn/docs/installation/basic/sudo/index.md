@@ -39,6 +39,7 @@ usermod -aG sudo sky
 ```
 
 退出 sky 账号，再次登录就可以 sudo 了:
+
 ```bash
 $ ls                                                                                      
 [sudo] password for sky: 

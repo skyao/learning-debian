@@ -28,7 +28,7 @@ sdkman 支持的 sdk 列表请见： https://sdkman.io/sdks
 https://sdkman.io/install
 
 ```bash
-$ curl -s "https://get.sdkman.io" | bash
+curl -s "https://get.sdkman.io" | bash
 ```
 
 安装完成后，关闭当前终端重新打开新的终端，或者在当前终端中执行下面的命令立即更新：

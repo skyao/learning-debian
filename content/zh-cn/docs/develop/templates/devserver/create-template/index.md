@@ -7,13 +7,15 @@ description: >
   创建 debian 12 开发服务器模板
 ---
 
-## 准备虚拟机
+## 准备工作
+
+### 准备虚拟机
 
 从模版 template-debian12-basic-v03 （取最新版本） 克隆一个虚拟机，命名为 template-debian12-devserver-v01，VM ID 为 990301.
 
 开发需要的 cpu 和内存稍大，修改虚拟机参数，cpu 修改为 8 核，内存 16g（mini 8192，memory 16384）。
 
-## 准备磁盘
+### 准备磁盘
 
 devserver 预计会有两台实例，用于两个异地的开发环境。
 
@@ -31,14 +33,30 @@ lspci | grep Non-Volatile
 02:00.0 Non-Volatile memory controller: Samsung Electronics Co Ltd NVMe SSD Controller SM981/PM981/PM983
 ```
 
-## 准备网络共享
+参考本读书笔记中的 [devserver91](../../../../storage/devserver91/) 一节, 配置好磁盘并进行分区，然后安装 nfs server。
 
-然后配置 nfs 网络共享和安装 sftp server： 
+## 搭建开发环境
 
-- nfs server ： 参考 [用虚拟机实现的SSD NAS存储](../../../../storage/devserver91/)
-- sftp server： 参考 [安装 SFTP 服务器](../../../../installation/basic/additional/#sftp-server)
-
-## 安装开发工具
+### 安装 docker 和 habor
 
 - docker/docker-compose: https://skyao.io/learning-docker/docs/installation/debian12/
 - habor: https://skyao.io/learning-docker/docs/repository/habor/
+
+### 安装开发工具
+
+参考本读书笔记中的 [开发工具](../../../tools/) 一节, 安装开发工具:
+
+- sdkman
+- nexus
+
+### 语言 sdk 和 nexus 私库
+
+参考本读书笔记中的 [编程语言](../../../langurage/) 一节, 安装语言 sdk 和对应的 nexus 私库:
+
+- Java： 包括 maven
+- golang
+- rust
+- python
+- nodejs
+
+
