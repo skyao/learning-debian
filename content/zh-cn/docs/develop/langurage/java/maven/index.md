@@ -274,8 +274,10 @@ cd ~/work/code/temp/java-demo
 # 现在不能直接从 github 下载了？
 #wget https://github.com/skyao/learning-debian/blob/main/content/zh-cn/docs/develop/langurage/java/maven/images/maven-deploy-demo.tar
 
-# scp 传输文件
-scp ./maven-deploy-demo.tar sky@192.168.3.91:/home/sky/work/code/temp/java-demo
+# 先收工下载到本地，再scp 传输文件到 devserver91 机器备用
+# scp ./maven-deploy-demo.tar sky@192.168.3.91:/home/sky/work/code/temp/java-demo
+# 以后用的时候再从 devserver91 机器下载
+scp sky@192.168.3.91:/home/sky/work/code/temp/java-demo/maven-deploy-demo.tar .
 
 tar -xvf maven-deploy-demo.tar
 cd maven-deploy-demo
