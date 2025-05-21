@@ -13,6 +13,9 @@ description: >
 https://askubuntu.com/questions/1253347/how-to-easily-remove-old-kernels-in-ubuntu-20-04-lts
 
 ```bash
+mkdir -p ~/work/soft/debian
+cd ~/work/soft/debian
+
 vi remove_old_kernels.sh
 ```
 

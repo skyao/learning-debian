@@ -47,3 +47,29 @@ bin  debian12  temp  work
 $ id
 uid=1000(sky) gid=1000(sky) groups=1000(sky),24(cdrom),25(floppy),27(sudo),29(audio),30(dip),44(video),46(plugdev),100(users),106(netdev)
 ```
+
+## 问题2
+
+在某些 debian 12 上（比如腾讯云），即使使用 usermod 加入了 sudo 组，仍然不能使用 sudo：
+
+```bash
+$ sudo ls 
+[sudo] password for sky: 
+sky is not in the sudoers file.
+$ id
+uid=1003(sky) gid=1003(sky) groups=1003(sky),27(sudo),100(users)
+```
+
+解决的办法是用 root 帐号执行
+
+```bash
+visudo
+```
+
+命令，然后添加下面这样内容：
+
+```bash
+%sudo ALL=(ALL:ALL) ALL
+```
+
+保存退出，然后 sky 帐号重新登录可以使用 sudo 。
