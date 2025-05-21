@@ -214,6 +214,30 @@ npm install -D postcss
 可以看到代理仓库中已经有了这些包。
 
 
+## 设置代理
+
+有时需要设置代理，比如在腾讯云国内的服务器上用 npm install，中间会访问 objects.githubusercontent.com, 导致失败。
+
+尝试设置 npm 的代理：
+
+```bash
+npm config set proxy http://127.0.0.1:7890
+npm config set https-proxy http://127.0.0.1:7890
+```
+
+查看代理设置：
+
+```bash
+npm config get proxy
+npm config get https-proxy
+```
+
+也还是无法访问 objects.githubusercontent.com。莫名其妙不知道为什么。
+
+没办法，只能尝试用 proxychains 强制 npm 走代理。
+
+具体做法参考： [clash 科学上网](../../../network/clash/#强制走代理)
+
 
 
 
