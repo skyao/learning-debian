@@ -48,4 +48,4 @@ Host github.com
     IdentityFile ~/.ssh/id_rsa_github
 ```
 
-其他设置参考： https://skyao.io/learning-git/docs/installation/initial/
+其他设置参考： https://skyao.net/learning-git/docs/installation/initial/

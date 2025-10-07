@@ -7,5 +7,5 @@ description: >
   构建用于 k8s 的 pve 模板
 ---
 
-https://skyao.io/learning-pve/templates/debian12/k8s/
+https://skyao.net/learning-pve/templates/debian12/k8s/
 

@@ -9,5 +9,5 @@ description: >
 
 参考：
 
-https://skyao.io/learning-rust/docs/installation/linux/
+https://skyao.net/learning-rust/docs/installation/linux/
 

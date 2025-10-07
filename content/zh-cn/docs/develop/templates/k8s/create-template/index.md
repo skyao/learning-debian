@@ -19,5 +19,5 @@ k8s 需要的 cpu 和内存稍大，修改虚拟机参数，cpu 修改为 8 核�
 
 目前采用的是预热安装的方式，详细参考：
 
-https://skyao.io/learning-kubernetes/docs/installation/kubeadm/debian12/prewarm/
+https://skyao.net/learning-kubernetes/docs/installation/kubeadm/debian12/prewarm/
 

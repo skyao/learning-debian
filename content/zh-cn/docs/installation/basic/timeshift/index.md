@@ -11,7 +11,7 @@ description: >
 
 具体操作参考：
 
-https://skyao.io/learning-ubuntu-server/docs/installation/timeshift/
+https://skyao.net/learning-ubuntu-server/docs/installation/timeshift/
 
 ## 安装
 

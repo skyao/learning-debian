@@ -7,5 +7,5 @@ description: >
   构建可快速搭建，可重复使用的编程开发环境
 ---
 
-https://skyao.io/learning-pve/templates/debian12/dev/
+https://skyao.net/learning-pve/templates/debian12/dev/
 

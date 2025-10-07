@@ -16,7 +16,7 @@ description: >
 
 ### 安装 MLNX_OFED 驱动
 
-cx-5 100g网卡参考： https://skyao.io/learning-computer-hardware/nic/cx5-huawei-sp350/driver/debian12/
+cx-5 100g网卡参考： https://skyao.net/learning-computer-hardware/nic/cx5-huawei-sp350/driver/debian12/
 
 nfs 服务器和客户端都要安装网卡驱动。
 

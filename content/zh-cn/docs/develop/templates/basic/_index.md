@@ -7,5 +7,5 @@ description: >
   构建最基本的 debian 12 系统
 ---
 
-https://skyao.io/learning-pve/templates/debian12/basic/
+https://skyao.net/learning-pve/templates/debian12/basic/
 

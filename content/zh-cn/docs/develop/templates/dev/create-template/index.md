@@ -23,7 +23,7 @@ description: >
 
 #### 安装 docker
 
-- docker/docker-compose: https://skyao.io/learning-docker/docs/installation/debian12/
+- docker/docker-compose: https://skyao.net/learning-docker/docs/installation/debian12/
 - kubectl
 
 #### 安装开发工具

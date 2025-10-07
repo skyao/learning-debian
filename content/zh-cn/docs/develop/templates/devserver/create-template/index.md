@@ -39,8 +39,8 @@ lspci | grep Non-Volatile
 
 ### 安装 docker 和 habor
 
-- docker/docker-compose: https://skyao.io/learning-docker/docs/installation/debian12/
-- habor: https://skyao.io/learning-docker/docs/repository/habor/
+- docker/docker-compose: https://skyao.net/learning-docker/docs/installation/debian12/
+- habor: https://skyao.net/learning-docker/docs/repository/habor/
 
 ### 安装开发工具
 

@@ -7,5 +7,5 @@ description: >
   构建用于编程开发的服务器模板
 ---
 
-https://skyao.io/learning-pve/templates/debian12/devserver/
+https://skyao.net/learning-pve/templates/debian12/devserver/
 
