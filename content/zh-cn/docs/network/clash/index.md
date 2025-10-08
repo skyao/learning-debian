@@ -2,12 +2,12 @@
 title: "clash"
 linkTitle: "clash"
 date: 2025-04-07
-weight: 70
+weight: 80
 description: >
-  clash 科学上网软件
+  clash 科学上网软件客户端
 ---
 
-### 下载
+### 下载clash
 
 原网站 https://github.com/Dreamacro/clash/ 网站已经无法访问。
 
@@ -23,7 +23,7 @@ https://github.com/moshaoli688/clash/releases
 wget https://github.com/moshaoli688/clash/releases/download/v1.18.0/clash-linux-amd64-v1.18.0.gz
 ```
 
-### 安装
+### 安装clash
 
 解压后将 clash 文件移动到 /usr/local/bin/clash :
 
@@ -42,9 +42,22 @@ $ clash -v
 Clash v1.18.0 linux amd64 with go1.21.5 Wed Dec 27 13:02:19 UTC 2023
 ```
 
-### 初始化
+### 配置clash
 
-初始化配置文件：
+创建 clash 的配置目录：
+
+```bash
+sudo mkdir -p /etc/clash
+cd /etc/clash
+```
+
+手工下载IP数据库文件：
+
+```bash
+sudo wget https://cdn.jsdelivr.net/gh/Dreamacro/maxmind-geoip@release/Country.mmdb
+```
+
+否则启动时会自动下载，然后一般会失败：
 
 ```bash
 INFO[0000] Can't find config, create a initial config file 
@@ -52,21 +65,12 @@ INFO[0000] Can't find MMDB, start download
 FATA[0000] Initial configuration directory error: can't initial MMDB: can't download MMDB: Get "https://cdn.jsdelivr.net/gh/Dreamacro/maxmind-geoip@release/Country.mmdb": read tcp 10.1.20.3:57604->8.7.198.46:443: read: connection reset by peer 
 ```
 
-mmdb 是 ip 数据库文件，需要下载，但是这个地址很容易被墙导致无法下载，可以多试几次。或者用其他方式将这个 https://cdn.jsdelivr.net/gh/Dreamacro/maxmind-geoip@release/Country.mmdb 下载下来，然后放到 `～/.config/clash` 目录下。
+mmdb 是 ip 数据库文件，需要下载，但是这个地址很容易被墙导致无法下载，可以多试几次。或者用其他方式将这个 https://cdn.jsdelivr.net/gh/Dreamacro/maxmind-geoip@release/Country.mmdb 下载下来，然后放到 `/etc/clash` 目录下。
 
-顺利下载完成后，clash 就能启动了：
+再创建配置文件：
 
 ```bash
-$ clash
-INFO[0000] inbound mixed://127.0.0.1:7890 create success. 
-```
-
-### 配置
-
-我这个只是给服务器零时用一下，因此配置很简单
-
-```yaml
-vi ~/.config/clash/config.yaml
+sudo vi /etc/clash/config.yaml
 ```
 
 配置文件内容：
@@ -74,7 +78,7 @@ vi ~/.config/clash/config.yaml
 ```yaml
 mixed-port: 7890
 allow-lan: false
-bind-address: "0.0.0.0"
+bind-address: "127.0.0.1"
 #运行模式: 规则Rule,全局Global,直连Direct
 mode: rule
 #log-level: silent
@@ -84,8 +88,8 @@ log-level: info
 然后配置的其他内容，如各种服务器，需要从代理提供商那边获取，将配置文件下载下来，将里面的服务器配置信息添加到上面的配置文件中：
 
 ```yaml
-# 以上内容忽略
-# 只保留以下内容
+# dns以上的内容忽略，使用上面的配置内容
+# 只保留dns以下内容
 
 dns:
   enable: true
@@ -93,6 +97,66 @@ dns:
   ipv6: false
   ......
 ```
+
+配置完成后，clash 就能手工启动了：
+
+```bash
+$ sudo clash -d /etc/clash/
+INFO[0000] inbound mixed://127.0.0.1:7890 create success. 
+```
+
+### 开机自动启动
+
+创建 systemd 服务文件：
+
+```bash
+sudo vi /etc/systemd/system/clash.service
+```
+
+内容为：
+
+```properties
+[Unit]
+Description=Clash Client
+After=network.target
+```
+
+[Service]
+ExecStart=/usr/local/bin/clash -d /etc/clash/
+Restart=on-failure
+User=root
+LimitNOFILE=51200
+```
+
+[Install]
+WantedBy=multi-user.target
+```
+
+重新加载 systemd：
+
+```bash
+sudo systemctl daemon-reload
+```
+
+启动：
+
+```bash
+sudo systemctl start clash
+```
+
+设置开机自启：
+
+```bash
+sudo systemctl enable clash
+```
+
+查看状态：
+
+```bash
+sudo systemctl status clash
+```
+
+### 配置代理
 
 ```bash
 vi ~/.zshrc
@@ -102,26 +166,11 @@ vi ~/.zshrc
 
 ```bash
 # set proxy 
-alias proxyon='export all_proxy=socks5://127.0.0.1:7890;export http_proxy=http://127.0.0.1:7890;export https_proxy=http://127.0.0.1:7890;export no_proxy=127.0.0.1,localhost,local,.local,.lan,192.168.0.0/16,10.0.0.0/16'
+alias proxyon-clash='export all_proxy=socks5://127.0.0.1:7890;export http_proxy=http://127.0.0.1:7890;export https_proxy=http://127.0.0.1:7890;export no_proxy=127.0.0.1,localhost,local,.local,.lan,192.168.0.0/16,10.0.0.0/16'
 
 alias proxyoff='unset all_proxy http_proxy https_proxy no_proxy'
 ```
 
-### 日常使用
-
-平时 clash 不开启，必要时开启：
-
-```bash
-clash
-```
-
-在其他终端开启代理：
-
-```bash
-proxyon
-```
-
-使用完成后关闭 clash 即可。
 
 ### 强制走代理
 
