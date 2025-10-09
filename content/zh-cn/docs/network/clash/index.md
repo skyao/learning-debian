@@ -76,8 +76,12 @@ sudo vi /etc/clash/config.yaml
 配置文件内容：
 
 ```yaml
-mixed-port: 7890
+port: 7890
+socks-port: 7891
+redir-port: 7892
+mixed-port: 7893
 allow-lan: false
+# 监听地址,安全起见用127.0.0.1,如果容许给局域网内的其他机器使用,可以设置为 0.0.0.0
 bind-address: "127.0.0.1"
 #运行模式: 规则Rule,全局Global,直连Direct
 mode: rule
@@ -102,7 +106,14 @@ dns:
 
 ```bash
 $ sudo clash -d /etc/clash/
-INFO[0000] inbound mixed://127.0.0.1:7890 create success. 
+INFO[0000] Start initial compatible provider 自动选择       
+INFO[0000] Start initial compatible provider 节点选择       
+INFO[0000] inbound http://127.0.0.1:7890 create success. 
+INFO[0000] inbound socks://127.0.0.1:7891 create success. 
+INFO[0000] inbound redir://127.0.0.1:7892 create success. 
+INFO[0000] inbound mixed://127.0.0.1:7893 create success. 
+INFO[0000] RESTful API listening at: [::]:9090          
+INFO[0000] DNS server listening at: 127.0.0.1:8853
 ```
 
 ### 开机自动启动
@@ -119,14 +130,12 @@ sudo vi /etc/systemd/system/clash.service
 [Unit]
 Description=Clash Client
 After=network.target
-```
 
 [Service]
 ExecStart=/usr/local/bin/clash -d /etc/clash/
 Restart=on-failure
 User=root
 LimitNOFILE=51200
-```
 
 [Install]
 WantedBy=multi-user.target
@@ -166,7 +175,7 @@ vi ~/.zshrc
 
 ```bash
 # set proxy 
-alias proxyon-clash='export all_proxy=socks5://127.0.0.1:7890;export http_proxy=http://127.0.0.1:7890;export https_proxy=http://127.0.0.1:7890;export no_proxy=127.0.0.1,localhost,local,.local,.lan,192.168.0.0/16,10.0.0.0/16'
+alias proxyon-clash='export all_proxy=socks5://127.0.0.1:7891;export http_proxy=http://127.0.0.1:7890;export https_proxy=http://127.0.0.1:7890;export no_proxy=127.0.0.1,localhost,local,.local,.lan,192.168.0.0/16,10.0.0.0/16'
 
 alias proxyoff='unset all_proxy http_proxy https_proxy no_proxy'
 ```
