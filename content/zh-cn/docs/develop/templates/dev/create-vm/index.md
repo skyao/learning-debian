@@ -1,7 +1,7 @@
 ---
 title: "创建实例"
 linkTitle: "创建实例"
-date: 2025-04-03
+date: 2025-10-26
 weight: 100
 description: >
   基于模板创建开发环境实例
@@ -9,7 +9,9 @@ description: >
 
 ## 准备虚拟机
 
-从模版 template-debian12-dev-vxx 克隆三个虚拟机，命名为 dev111/dev121/dev131，三个开发机备用.
+以 debian 13 为例。
+
+从模版 template-debian13-dev-vxx 克隆三个虚拟机，命名为 dev111/dev121/dev131，三个开发机备用.
 
 开发需要的 cpu 和内存稍大，修改虚拟机参数，cpu 修改为 16核 （cpu 亲和性设置为 0-15,用大核），内存 32g （8192 MB 到 32768）。
 

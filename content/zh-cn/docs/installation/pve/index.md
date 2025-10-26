@@ -1,11 +1,13 @@
 ---
 title: "pve安装"
 linkTitle: "pve安装"
-date: 2024-01-18
+date: 2025-10-26
 weight: 20
 description: >
-  在 pve8.1 下安装 debian 12.4
+  在 pve 下安装 debian 
 ---
+
+备注：在 pve8 下安装 debian12 和在 pve9 下安装 debian13 是非常类似的。
 
 ## 准备工作
 
@@ -13,7 +15,7 @@ description: >
 
 General：
 
-- name： debian12
+- name： debian12 或者 debian13
 
 OS:
 
@@ -56,7 +58,7 @@ Memory:
 Network:
 
 - bridage: vmbr0
-- model: virtIO
+- model: virtIO(paravirtualized)
 
 确认之后，先别启动，在虚拟机属性中，找到 boot order ，去掉 net0，保留 csi0 和 ide2 光盘启动。
 
@@ -76,7 +78,7 @@ Network:
 
 配置网络：
 
- - hostname: debian12.local 
+ - hostname: debian12.local 或者 debian13.local
 
 配置用户和密码：
 

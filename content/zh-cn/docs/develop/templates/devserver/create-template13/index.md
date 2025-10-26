@@ -1,13 +1,15 @@
 ---
-title: "创建模板(debian12)"
-linkTitle: "创建模板(debian12)"
+title: "创建模板（debian13）"
+linkTitle: "创建模板（debian13）"
 date: 2025-10-26
-weight: 10
+weight: 9
 description: >
-  创建 debian 12 开发服务器模板
+  创建 debian 13 开发服务器模板
 ---
 
 ## 准备工作
+
+以 debian 13 为例，debian13 后开发服务器不再是一台独立服务器和两块单独的 ssd 硬盘。所有构建方式和之前的有比较大的差异。
 
 ### 准备虚拟机
 
@@ -19,18 +21,19 @@ description: >
 
 devserver 预计会有两台实例，用于两个异地的开发环境。
 
-我为每台实例都准备了 2 块三星 pm983a 900G 的 ssd 磁盘，一块用于应用（如数据库，redis，queue等），一块用于数据（如pve需要的nfs，nexus 代理仓库等）。
+为每台实例准备了 2 块两块额外的磁盘，一块用于应用（如数据库，redis，queue等），一块用于数据（如pve需要的nfs，nexus 代理仓库等）。在虚拟机硬件中，增加两块 hard disk，大小为 512g，scsi 类型，virtIO scsi 控制器。注意把 backup 选项勾选去掉。
 
-在 pve 中，将两块 ssd 磁盘直通给到虚拟机，并挂载到 `/mnt/data` 目录。
+在 pve 中，将两块 hard disk 磁盘添加到虚拟机，并挂载到 `/mnt/data` 目录。
 
-![](images/pass-through-ssd.png)
+![](images/add-two-hard-disks.png)
 
 在虚拟机中可以看到这两块磁盘：
 
 ```bash
-lspci | grep Non-Volatile
-01:00.0 Non-Volatile memory controller: Samsung Electronics Co Ltd NVMe SSD Controller SM981/PM981/PM983
-02:00.0 Non-Volatile memory controller: Samsung Electronics Co Ltd NVMe SSD Controller SM981/PM981/PM983
+lspci | grep storage
+09:01.0 SCSI storage controller: Red Hat, Inc. Virtio SCSI
+09:02.0 SCSI storage controller: Red Hat, Inc. Virtio SCSI
+09:03.0 SCSI storage controller: Red Hat, Inc. Virtio SCSI
 ```
 
 参考本读书笔记中的 [devserver91](../../../../storage/devserver91/) 一节, 配置好磁盘并进行分区，然后安装 nfs server。

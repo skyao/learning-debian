@@ -1,10 +1,10 @@
 ---
 title: "创建虚拟机"
 linkTitle: "创建虚拟机"
-date: 2025-05-07
+date: 2025-10-26
 weight: 20
 description: >
-  创建使用 debian 12 基础模板的虚拟机
+  创建使用 debian 12/13 基础模板的虚拟机
 ---
 
 ## 创建虚拟机

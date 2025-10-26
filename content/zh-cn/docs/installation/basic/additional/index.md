@@ -22,7 +22,7 @@ sudo apt install --fix-broken
 ## 工具类
 
 ```bash
-sudo apt install htop unzip zip curl
+sudo apt install -y htop unzip zip curl
 ```
 
 ### 修复 locale 报错
@@ -81,7 +81,7 @@ Iperf3 安装时会询问是否系统服务（自动启动），选择 yes，这
 
 ### nc
 
-debian 12 自带的 nc 是 netcat-traditional 包提供的版本:
+debian 12/13 自带的 nc 是 netcat-traditional 包提供的版本:
 
 ```bash
 $ nc -h 
@@ -126,7 +126,7 @@ sudo apt install -y netcat-openbsd
 
 ### 安装 socat
 
-debian12 下没有 socat 命令（用于 git http代理），需要安装：
+debian12/13 下没有 socat 命令（用于 git http代理），需要安装：
 
 ```bash
 sudo apt install -y socat

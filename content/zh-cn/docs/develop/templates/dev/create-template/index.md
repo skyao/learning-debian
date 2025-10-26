@@ -1,17 +1,19 @@
 ---
 title: "创建模板"
 linkTitle: "创建模板"
-date: 2025-05-08
+date: 2025-10-26
 weight: 10
 description: >
-  创建基于debian12 的 dev 开发模板
+  创建基于debian12/13 的 dev 开发模板
 ---
 
 ## 制作过程-v1
 
+以 debian 13 为例。
+
 ### 准备虚拟机
 
-从模版 template-debian12-basic-v03 （取最新版本） 克隆一个虚拟机，命名为 template-debian12-dev-v01，VM ID 为 990201.
+从模版 template-debian13-basic-v01 （取最新版本） full clone 克隆一个虚拟机，命名为 template-debian13-dev-v01，VM ID 为 990101.
 
 开发需要的 cpu 和内存稍大，修改虚拟机参数，cpu 修改为 8 核，内存 32g（mini 8192，memory 32768）。
 
