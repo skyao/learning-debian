@@ -209,8 +209,34 @@ alias proxyoff='unset all_proxy http_proxy https_proxy no_proxy'
     proxychains4 npm install postcss-cli
     ```
 
+### 指定规则
 
+有时需要为某些特殊域名指定代理规则,比如必须直连,或者必须走代理.
 
+典型如:
+
+- copilot.microsoft.com: 不开放给国内访问,必须要走代理
+
+设置方式, 以 "copilot.microsoft.com"为例, clash 设置代理规则为 Rule(默认就是), 然后修改配置文件:
+
+```bash
+sudo vi /etc/clash/config.yaml
+```
+
+找到 microsoft.com 设置的这一行, 默认是 DIRECT 直接访问, 在这行上面增加一行, 设置 copilot.microsoft.com 为 "节点选择":
+
+```properties
+ - DOMAIN-SUFFIX,copilot.microsoft.com,节点选择
+ - DOMAIN-SUFFIX,microsoft.com,DIRECT
+```
+
+> 备注: 发现 copilot.microsoft.com 这行放在最后面,无法生效, 必须放在 microsoft.com 之前.
+
+重启后生效:
+
+```bash
+sudo systemctl restart clash
+```
 
 
 
