@@ -16,8 +16,6 @@ debian 的安装文件分为两种
 
 ## debian 13
 
-### 下载
-
 打开 debian 官网
 
 https://www.debian.org/distrib/

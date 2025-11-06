@@ -21,21 +21,21 @@ sdk list maven
 
 ```bash
 Available Maven Versions
-     4.0.0-rc-3          3.9.0               3.5.2                              
-     4.0.0-rc-2          3.8.8               3.5.0                              
-     4.0.0-rc-1          3.8.7               3.3.9                              
-     4.0.0-beta-5        3.8.6               3.3.3                              
-     4.0.0-beta-4        3.8.5               3.3.1                              
-     4.0.0-beta-3        3.8.4               3.2.5                              
-   * 3.9.9               3.8.3               3.2.3                              
-     3.9.8               3.8.2               3.2.2                              
-     3.9.7               3.8.1               3.2.1                              
-     3.9.6               3.6.3               3.1.1                              
-     3.9.5               3.6.2               3.1.0                              
-     3.9.4               3.6.1               3.0.5                              
-     3.9.3               3.6.0               3.0.4                              
-     3.9.2               3.5.4                                                  
-     3.9.1               3.5.3                                                  
+     4.0.0-rc-4          3.8.7               3.3.9                              
+     3.9.11              3.8.6               3.3.3                              
+     3.9.10              3.8.5               3.3.1                              
+     3.9.9               3.8.4               3.2.5                              
+     3.9.8               3.8.3               3.2.3                              
+     3.9.7               3.8.2               3.2.2                              
+     3.9.6               3.8.1               3.2.1                              
+     3.9.5               3.6.3               3.1.1                              
+     3.9.4               3.6.2               3.1.0                              
+     3.9.3               3.6.1               3.0.5                              
+     3.9.2               3.6.0               3.0.4                              
+     3.9.1               3.5.4                                                  
+     3.9.0               3.5.3                                                  
+     3.8.9               3.5.2                                                  
+     3.8.8               3.5.0                                                              
 
 ================================================================================
 + - local version
@@ -47,21 +47,32 @@ Available Maven Versions
 安装指定版本的 maven, 4.0 还是 rc 版本, 先用 3.9 系列：
 
 ```bash
-sdk install maven 3.9.9
+sdk install maven 3.9.11
 ```
 
 输出为：
 
 ```bash
-Downloading: maven 3.9.9
+Downloading: maven 3.9.11
 
 In progress...
 
 ########################################################################################################################################### 100.0%
 
-Installing: maven 3.9.9
+Installing: maven 3.9.11
 Done installing!
 ```
+
+查看安装的版本:
+
+```bash
+$ ls ~/.sdkman/candidates/maven/
+
+3.9.11
+```
+
+sdk default maven 3.9.11
+
 
 重启 shell 或者执行下列命令重新加载 sdkman ：
 
@@ -74,11 +85,11 @@ source ~/.sdkman/bin/sdkman-init.sh
 ```bash
 $ mvn --version
 
-Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)
+Apache Maven 3.9.11 (3e54c93a704957b63ee3494413a2b544fd3d825b)
 Maven home: /home/sky/.sdkman/candidates/maven/current
-Java version: 17.0.14, vendor: Azul Systems, Inc., runtime: /home/sky/.sdkman/candidates/java/17.0.14-zulu
+Java version: 21.0.9, vendor: Azul Systems, Inc., runtime: /home/sky/.sdkman/candidates/java/21.0.9-zulu
 Default locale: en_US, platform encoding: UTF-8
-OS name: "linux", version: "6.1.0-31-amd64", arch: "amd64", family: "unix"
+OS name: "linux", version: "6.12.48+deb13-amd64", arch: "amd64", family: "unix"
 ```
 
 ## 配置

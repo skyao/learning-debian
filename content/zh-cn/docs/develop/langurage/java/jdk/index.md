@@ -19,20 +19,20 @@ sdk list java
 
 我偏好使用 zulu 的 openjdk 版本，所以这里以 zulu 为例。
 
-### jdk24（non-LTS）
+### jdk25（LTS）
 
-追踪一下最新版本的 jdk：
+追踪一下最新版本的 jdk, 凑巧也是 lts 版本：
 
 ```bash
-sdk install java 24.0.1-zulu
+sdk install java 25.0.1-zulu
 ```
 
 ### jdk21（LTS）
 
-虚拟线程正式发布，分代 ZGC、序列集合等新特性。
+上一个版本的 LTS, 虚拟线程正式发布，分代 ZGC、序列集合等新特性。
 
 ```bash
-sdk install java 21.0.7-zulu
+sdk install java 21.0.9-zulu
 ```
 
 ### jdk17（LTS）
@@ -40,7 +40,7 @@ sdk install java 21.0.7-zulu
 包含密封类（Sealed Classes）、模式匹配等新特性。
 
 ```bash
-sdk install java 17.0.15-zulu
+sdk install java 17.0.17-zulu
 ```
 
 ### jdk11（LTS）
@@ -48,7 +48,7 @@ sdk install java 17.0.15-zulu
 移除 Java EE 模块，引入 HTTP Client API、局部变量类型推断（var）等
 
 ```bash
-sdk install java 11.0.27-zulu
+sdk install java 11.0.29-zulu
 ```
 
 ### jdk8（LTS）
@@ -56,7 +56,7 @@ sdk install java 11.0.27-zulu
 jdk8 是最广泛使用的版本，支持 Lambda 表达式、Stream API 等。
 
 ```bash
-sdk install java 8.0.452-zulu
+sdk install java 8.0.472-zulu
 ```
 
 ## 使用 jdk
@@ -70,34 +70,36 @@ ls ~/.sdkman/candidates/java/
 输出如下：
 
 ```bash
-11.0.26-zulu  17.0.14-zulu  21.0.6-zulu  8.0.442-zulu  current
+11.0.29-zulu  17.0.17-zulu  21.0.9-zulu  25.0.1-zulu  8.0.472-zulu  current
 ```
 
 设置默认的 jdk 版本：
 
 ```bash
-sdk default java 17.0.14-zulu
+sdk default java 21.0.9-zulu
 ```
 
 在当前 shell 中使用指定版本的 jdk，可覆盖默认设置：
 
 ```bash
-sdk use java 11.0.26-zulu
+sdk use java 17.0.17-zulu
 ```
 
 查看当前使用的 jdk 版本：
 
 ```bash
-sdk current java
+$ sdk current java
+
+Using java version 21.0.9-zulu
 ```
 
 查看 jdk 版本信息：
 
 ```bash 
 $ java --version
-openjdk 17.0.14 2025-01-21 LTS
-OpenJDK Runtime Environment Zulu17.56+15-CA (build 17.0.14+7-LTS)
-OpenJDK 64-Bit Server VM Zulu17.56+15-CA (build 17.0.14+7-LTS, mixed mode, sharing)
+openjdk 17.0.17 2025-10-21 LTS
+OpenJDK Runtime Environment Zulu17.62+17-CA (build 17.0.17+10-LTS)
+OpenJDK 64-Bit Server VM Zulu17.62+17-CA (build 17.0.17+10-LTS, mixed mode, sharing)
 ```
 
 

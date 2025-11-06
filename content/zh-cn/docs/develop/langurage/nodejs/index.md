@@ -19,33 +19,32 @@ https://nodejs.org/en/download
 
 ```bash
 # Download and install nvm:
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
 
 # in lieu of restarting the shell
 \. "$HOME/.nvm/nvm.sh"
 
 # Download and install Node.js:
-nvm install 22
+nvm install 24
 
 # Verify the Node.js version:
-node -v # Should print "v22.14.0".
-nvm current # Should print "v22.14.0".
+node -v # Should print "v24.11.0".
 
 # Verify npm version:
-npm -v # Should print "10.9.2".
+npm -v # Should print "11.6.1".
 ```
 
 安装完成后验证：
 
 ```bash
 $ node -v
-v22.14.0
+v24.11.0
 
 $ nvm current
-v22.14.0
+v24.11.0
 
 $ npm -v 
-10.9.2
+11.6.1
 ```
 
 这里用了 nvm 来进行跨平台的 node 多版本管理。
@@ -101,13 +100,13 @@ nrm ls
 输出为：
 
 ```bash
-  npm ---------- https://registry.npmjs.org/
-  yarn --------- https://registry.yarnpkg.com/
-  tencent ------ https://mirrors.tencent.com/npm/
-  cnpm --------- https://r.cnpmjs.org/
-  taobao ------- https://registry.npmmirror.com/
-  npmMirror ---- https://skimdb.npmjs.com/registry/
-  huawei ------- https://repo.huaweicloud.com/repository/npm/
+  npm ---------- 205 ms
+  yarn --------- 296 ms
+  tencent ------ 361 ms
+  cnpm --------- 474 ms
+  taobao ------- 162 ms
+  npmMirror ---- 1246 ms (Fetch error, if this is your private registry, please ignore)
+  huawei ------- 204 ms
 ```
 
 切换源（例如切换到淘宝源）：

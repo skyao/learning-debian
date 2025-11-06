@@ -4,7 +4,7 @@ linkTitle: "物理机安装"
 date: 2024-01-18
 weight: 15
 description: >
-  在物理机上安装 debian 12.7
+  在物理机上安装 debian12 和 debian13
 ---
 
 
@@ -12,7 +12,9 @@ description: >
 
 ### 安装版本
 
-更新时间是 2024-09-16, 安装的当时的最新版本 debian 12.7。
+更新时间: 2024-09-16, 安装的版本是 debian 12.7。
+
+更新时间: 2024-11-05, 安装的版本是 debian 13.1。
 
 ### 制作U盘
 
@@ -32,6 +34,7 @@ windows 下一般用 refus 软件。
 配置网络：
 
  - hostname: debian12.local 
+ - hostname: debian13.local 
 
 配置用户和密码：
 
@@ -57,6 +60,10 @@ software selection，这是选择要继续安装的内容：
 - 选择 ssh server 和 standard system utilities
 
 等待安装完成，重启。
+
+## 注意事项
+
+曾经试过用 debian-13.1.0-amd64-netinst.iso (文件大小为 791M) 这个网络安装版本,在没有网络的情况下, 安装到最后一步 software selection, 没有任何可选项, 连最基本的 ssh server 都没有。导致安装结束之后, 机器可以正常启动, 但是因为没有 ssh server 导致无法远程连接. 
 
 ## 小结
 
