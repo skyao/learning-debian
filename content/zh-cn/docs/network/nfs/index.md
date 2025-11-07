@@ -4,8 +4,10 @@ linkTitle: "nfs"
 date: 2024-09-16
 weight: 40
 description: >
-  在 debian12 下利用 nfs 实现网络文件系统
+  在 debian 下利用 nfs 实现网络文件系统
 ---
+
+debian12 和 debian 13 下操作基本相同, 但debian 13 下需要处理一些额外的问题.
 
 ## nfs 服务器端
 
@@ -170,6 +172,118 @@ Export list for debian12:
 /exports/shared 192.168.0.0/16
 ```
 
+### debian13的特殊处理
+
+debian12 下工作正常,但是在 debian 13 下会出现 "nfsdctl: lockd configuration failure" 的报错: 
+
+```bash
+sudo systemctl status nfs-kernel-server
+
+Nov 07 09:58:15 devserver193 systemd[1]: Starting nfs-server.service - NFS server and services...
+Nov 07 09:58:15 devserver193 sh[892]: nfsdctl: lockd configuration failure
+Nov 07 09:58:15 devserver193 systemd[1]: Finished nfs-server.service - NFS server and services.
+```
+
+这是因为在 Debian 13 中，nfs-lock.service 已经不存在了:
+
+```bash
+sudo systemctl status nfs-lock 
+
+Unit nfs-lock.service could not be found.
+```
+
+在 Debian 13 中, 文件锁功能由 nfs-utils 包中的 statd 和内核的 lockd 模块提供，不再单独以 nfs-lock.service 形式出现。这就是上面报错 “Unit nfs-lock.service could not be found” 的原因。
+
+Debian 12 和 13 的不同在于:
+
+- Debian 12 (Bookworm) 还保留了 nfs-lock.service，它主要负责启动 rpc.statd，用于 NFS 文件锁。
+
+- Debian 13 (Trixie/unstable) 中，NFS 服务架构调整，nfs-lock.service 被移除，相关功能直接由 rpc.statd 和 rpcbind 管理。
+
+解决方式:
+
+- 检查 rpcbind 和 statd
+
+   ```bash
+   $ systemctl status rpcbind
+
+    ● rpcbind.service - RPC bind portmap service
+        Loaded: loaded (/usr/lib/systemd/system/rpcbind.service; enabled; preset: enabled)
+        Active: active (running) since Fri 2025-11-07 10:06:15 CST; 10min ago
+
+   $ ps aux | grep statd
+
+   statd        790  0.0  0.0   4556  2040 ?        Ss   10:06   0:00 /usr/sbin/rpc.statd
+   ```
+
+   这两个在 debian13 上都存在.
+
+- 检查内核模块 lockd
+
+   ```bash
+   $ lsmod | grep lockd
+
+    lockd                 163840  1 nfsd
+    grace                  12288  2 nfsd,lockd
+    sunrpc                872448  12 nfsd,auth_rpcgss,lockd,nfs_acl
+   ```
+
+- 配置 nfs.conf
+
+   在 Debian 13 中，锁相关配置放在 /etc/nfs.conf 的 [lockd] 部分
+
+   ```bash
+   sudo vi /etc/nfs.conf
+   ```
+
+   默认内容:
+
+   ```properties
+   [lockd]
+   # port=0
+   # udp-port=0
+   ```
+
+   修改为:
+
+   ```properties
+   [lockd]
+   port=32769
+   udp-port=32803
+   ```
+
+- 配置文件
+
+   ```bash
+   sudo vi /etc/modprobe.d/lockd.conf
+   ```
+
+   内容为:
+
+  ```bash
+   options lockd nlm_tcpport=32769 nlm_udpport=32803
+  ```
+
+   更新 initramfs:
+
+  ```bash
+   sudo update-initramfs -u
+  ```
+
+- 重启nfs server, 最好是重启机器:
+
+   ```bash
+   sudo systemctl restart nfs-server
+   ```
+
+但这个错误并没有消息, 只是后来我发现 lock 的功能只在 nfs3 中使用, 我目前是关闭 nfs3, 只开启 nfs 4.2 (包括 nfs 4.0 和 4.1 也关闭了), 所以应该不会有影响. 暂时先忽略这个错误.
+
+AI 给的解释: 在只启用 NFSv4.2 的情况下，报错 “lockd configuration failure” 可以完全忽略，因为 lockd 仅用于 NFSv2/v3 的文件锁。NFSv4 自带内建的锁机制，不依赖 lockd 模块。
+
+参考:
+
+- https://www.reddit.com/r/archlinux/comments/1l7jwh3/nfsdctl_lockd_configuration_failure_i_cant_find/
+
 ### 设置 nfs 版本支持
 
 查看目前服务器端支持的 nfs 版本：
@@ -292,35 +406,7 @@ sudo mkdir -p nfs
 不带 nfsrdma 方式的挂载 nfs：
 
 ```bash
-sudo mount -t nfs 192.168.3.227:/exports/shared /mnt/nfs
+sudo mount -t nfs 192.168.3.193:/exports/shared /mnt/nfs
 ```
-
-挂载成功后，测试一下读写速度：
-
-```bash
-cd nfs
-
-# nfs 写入10G数据，速度大概在 610 MB/s
-sudo dd if=/dev/zero of=./test-10g.img bs=1G count=10 oflag=dsync
-10737418240 bytes (11 GB, 10 GiB) copied, 17.6079 s, 610 MB/s
-
-# nfs 读取100G数据，速度大概在 1.1 GB/s
-sudo dd if=./test-100g.img of=/dev/null bs=1G count=100 iflag=dsync
-107374182400 bytes (107 GB, 100 GiB) copied, 96.5171 s, 1.1 GB/s
-```
-
-对比一下在 nfs server 端直接硬盘读写 100G 数据的速度：
-
-```bash
-# 直接硬盘写入100G数据，速度大概在 1.3 GB/s
-sudo dd if=/dev/zero of=./test-100g.img bs=1G count=100 oflag=dsync
-107374182400 bytes (107 GB, 100 GiB) copied, 82.5747 s, 1.3 GB/s
-
-# 直接硬盘读取100G数据，速度大概在 4.0 GB/s
-sudo dd if=./test-100g.img of=/dev/null bs=1G count=100 iflag=dsync
-107374182400 bytes (107 GB, 100 GiB) copied, 26.9138 s, 4.0 GB/s
-```
-
-写入性能差异很大（1.3 GB/s 降低到 610 MB/s），估计是用 pve vmbr 的网卡，导致写入性能下降。读取的性能有更大的差异（4.0 GB/s 降低到 1.1 GB/s）。
 
 现在 nfs 服务器端和客户端之间的网络共享配置完成。

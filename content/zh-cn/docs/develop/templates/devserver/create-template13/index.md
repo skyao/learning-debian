@@ -21,9 +21,9 @@ description: >
 
 devserver 预计会有两台实例，用于两个异地的开发环境。
 
-为每台实例准备了 2 块两块额外的磁盘，一块用于应用（如数据库，redis，queue等），一块用于数据（如pve需要的nfs，nexus 代理仓库等）。在虚拟机硬件中，增加两块 hard disk，大小为 512g，scsi 类型，virtIO scsi 控制器。注意把 backup 选项勾选去掉。
+为每台实例准备了 2 块两块额外的磁盘，一块用于应用（如数据库，redis，queue等），一块用于数据（如pve需要的nfs，habor / nexus 代理仓库等）。在虚拟机硬件中，增加两块 hard disk，大小为 1024g，scsi 类型，virtIO scsi 控制器。注意把 backup 选项勾选去掉。
 
-在 pve 中，将两块 hard disk 磁盘添加到虚拟机，并挂载到 `/mnt/data` 目录。
+在 pve 中，将两块 hard disk 磁盘添加到虚拟机:
 
 ![](images/add-two-hard-disks.png)
 
@@ -36,7 +36,7 @@ lspci | grep storage
 09:03.0 SCSI storage controller: Red Hat, Inc. Virtio SCSI
 ```
 
-参考本读书笔记中的 [devserver91](../../../../storage/devserver91/) 一节, 配置好磁盘并进行分区，然后安装 nfs server。
+参考本读书笔记中的 [devserver193](../../../../storage/devserver193/) 一节, 配置好磁盘并进行分区，并挂载到 `/mnt/data` 和 `/mnt/app` 目录, 然后安装 nfs server。
 
 ## 搭建开发环境
 

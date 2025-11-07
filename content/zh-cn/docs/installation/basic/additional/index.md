@@ -42,32 +42,23 @@ locale: Cannot set LC_CTYPE to default locale: No such file or directory
 locale: Cannot set LC_ALL to default locale: No such file or directory
 ```
 
-可以通过执行 `locale` 命令来重现这个警告：
+可以通过执行 `locale` 命令来重现这个警告. 另外有时编辑文件时, 如果输入中文, 会出现乱码, 一般也是因为这里的 locale 设置有问题. 解决之后就不会中文乱码了.
 
-解决方案，
+最简单的修改方案：
 
 ```bash
-vi ~/.zshrc
+vi /etc/default/locale
 ```
 
 增加内容：
 
 ```bash
-export LC_CTYPE=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
+LC_CTYPE="en_US.UTF-8"
+LC_ALL="en_US.UTF-8"
+LANG="en_US.UTF-8"
 ```
 
-执行
-
-```bash
-source ~/.zshrc
-```
-
-验证结果。
-
-参考：
-
-- https://orcacore.com/system-locale-setup-debian-12-bookworm-command-line/
+重启.
 
 ## 网络类
 
