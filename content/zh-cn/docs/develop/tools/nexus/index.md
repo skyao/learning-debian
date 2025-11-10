@@ -17,17 +17,17 @@ Nexus Repository Manager 是一个强大的仓库管理工具，支持多种仓�
 
 ## 准备
 
-创建 nexus 用户专门用于运行 nexus：
-
-```bash
-sudo useradd -M -d /mnt/data/nexus -s /bin/zsh -r nexus
-```
-
 创建 nexus 目录：
 
 ```bash
-sudo mkdir -p /mnt/data/nexus
-sudo chown -R nexus:nexus /mnt/data/nexus
+sudo mkdir -p /mnt/data/services/nexus
+sudo chown -R nexus:nexus /mnt/data/services/nexus
+```
+
+创建 nexus 用户专门用于运行 nexus：
+
+```bash
+sudo useradd -M -d /mnt/data/services/nexus -s /bin/zsh -r nexus
 ```
 
 ## 下载
@@ -36,13 +36,13 @@ sudo chown -R nexus:nexus /mnt/data/nexus
 
 https://help.sonatype.com/en/download-archives---repository-manager-3.html
 
-从官方下载 nexus 安装包 nexus-3.85.0-03：
+从官方下载 nexus 安装包 nexus-3.86.0-08：
 
 ```bash
-cd /mnt/data/nexus
+cd /mnt/data/services/nexus
 # 必要时开启代理,不能可能因为网络原因无法下载
 # proxyon
-wget https://download.sonatype.com/nexus/3/nexus-3.85.0-03-linux-x86_64.tar.gz
+sudo wget https://download.sonatype.com/nexus/3/nexus-3.86.0-08-linux-x86_64.tar.gz
 ```
 
 > 备注： 这个版本是自带 jdk 的，因此不需要单独安装 jdk。自带的 jdk 在 `nexus/jdk/temurin_17.0.13_11_linux_x86_64` 目录下。
@@ -50,23 +50,23 @@ wget https://download.sonatype.com/nexus/3/nexus-3.85.0-03-linux-x86_64.tar.gz
 解压安装包：
 
 ```bash
-sudo tar -xzf nexus-3.85.0-03-linux-x86_64.tar.gz -C /mnt/data/nexus
-#sudo rm -rf nexus-3.85.0-03-linux-x86_64.tar.gz
-sudo chown -R nexus:nexus /mnt/data/nexus
+sudo tar -xzf nexus-3.86.0-08-linux-x86_64.tar.gz -C /mnt/data/services/nexus
+#sudo rm -rf nexus-3.86.0-08-linux-x86_64.tar.gz
+sudo chown -R nexus:nexus /mnt/data/services/nexus
 ```
 
 重命名 nexus 目录去掉版本信息（方便以后升级版本）：
 
 ```bash
-sudo mv nexus-3.85.0-03 nexus
+sudo mv nexus-3.86.0-08 nexus
 ```
 
 得到如下目录：
 
 ```bash
 $ ls -la
-drwxr-xr-x 8 nexus nexus 4096 Apr  7 10:32 nexus
-drwxr-xr-x 3 nexus nexus 4096 Mar 29 04:56 sonatype-work
+drwxr-xr-x 6 nexus nexus      4096 Nov  9 20:25 nexus
+drwxr-xr-x 3 nexus nexus      4096 Nov  4 07:12 sonatype-work
 ```
 
 ## 安装
@@ -109,8 +109,8 @@ After=network.target
 Type=forking
 User=nexus
 Group=nexus
-ExecStart=/mnt/data/nexus/nexus/bin/nexus start
-ExecStop=/mnt/data/nexus/nexus/bin/nexus stop
+ExecStart=/mnt/data/services/nexus/nexus/bin/nexus start
+ExecStop=/mnt/data/services/nexus/nexus/bin/nexus stop
 Restart=on-failure
 RestartSec=30
 LimitNOFILE=65536
@@ -161,14 +161,14 @@ nexus      19863       1 99 15:30 ?        00:01:12 /mnt/data/nexus/nexus/jdk/te
 
 访问地址：
 
-http://192.168.3.91:8081/
+http://192.168.3.193:8081/
 
 第一次启动会比较慢，要耐心等待几十秒中。
 
 登录时使用帐号 `admin` 和初始管理员密码，初始管理员密码位于：
 
 ```bash
-sudo vi /mnt/data/nexus/sonatype-work/nexus3/admin.password
+sudo vi /mnt/data/services/nexus/sonatype-work/nexus3/admin.password
 ```
 
 初始管理员密码会是一个类似这样的字符串：
@@ -190,7 +190,7 @@ sudo vi /mnt/data/nexus/sonatype-work/nexus3/admin.password
 ### jvm 内存配置
 
 ```bash
-sudo vi /mnt/data/nexus/nexus/bin/nexus.vmoptions
+sudo vi /mnt/data/services/nexus/nexus/bin/nexus.vmoptions
 ```
 
 修改 `nexus.vmoptions` 文件，增加如下内容：
@@ -208,7 +208,7 @@ sudo vi /mnt/data/nexus/nexus/bin/nexus.vmoptions
 默认端口是 8081，可以
 
 ```bash
-sudo vi /mnt/data/nexus/nexus/etc/nexus-default.properties
+sudo vi /mnt/data/services/nexus/nexus/etc/nexus-default.properties
 ```
 
 找到 `nexus-default.properties` 文件，修改 `application-port` 端口：

@@ -193,7 +193,7 @@ vi ~/.npmrc
 设置为以下内容：
 
 ```bash
-registry=http://192.168.3.91:8081/repository/npm-public/
+registry=http://192.168.3.193:8081/repository/npm-public/
 ```
 
 ### 验证代理

@@ -80,6 +80,12 @@ sdk default maven 3.9.11
 source ~/.sdkman/bin/sdkman-init.sh
 ```
 
+安全起见，明确设置 maven 的默认版本：
+
+```bash
+sdk default maven 3.9.11
+```
+
 验证 maven 安装版本：
 
 ```bash
@@ -92,6 +98,36 @@ Default locale: en_US, platform encoding: UTF-8
 OS name: "linux", version: "6.12.48+deb13-amd64", arch: "amd64", family: "unix"
 ```
 
+有时候不能直接生效，还是需要重新打开 shell 或者退出后重新 ssh 登录才能生效。
+
+如果遇到类似的命令未找到的报错：
+
+```bash
+$ mvn deploy 
+
+mvn-or-mvnw:12: command not found: mvn
+```
+
+可以检查 PATH 环境变量中是否包含 sdkman 下 maven 的路径：
+
+```bash
+$ echo $PATH | grep sdkman 
+
+/home/sky/.sdkman/candidates/java/current/bin:/home/sky/bin:/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games ➜ maven-deploy-demo sdk list maven sdk current maven No current version of maven configured.
+```
+
+比如上面这个例子，说明 PATH 环境变量中没有包含 sdkman 下 maven 的路径。导致执行 mvn 命令时无法找到 maven 命令。还是需要执行 `sdk default maven 3.9.11` 命令来设置默认版本。
+
+```bash
+sdk default maven 3.9.11
+```
+
+然后重新打开 shell 或者退出后重新 ssh 登录才能生效。
+
+```bash
+source ~/.sdkman/bin/sdkman-init.sh
+```
+
 ## 配置
 
 ### 配置代理服务器
@@ -99,7 +135,7 @@ OS name: "linux", version: "6.12.48+deb13-amd64", arch: "amd64", family: "unix"
 如有需要，配置代理服务器：
 
 ```bash
-export MAVEN_OPTS="-DsocksProxyHost=192.168.0.1 -DsocksProxyPort=7891"
+export MAVEN_OPTS="-DsocksProxyHost=192.168.3.1 -DsocksProxyPort=7891"
 ```
 
 ### 配置 maven 仓库
@@ -147,7 +183,7 @@ vi settings.xml
         <mirror>
             <id>nexus-mirror</id>
             <name>Nexus Repository</name>
-            <url>http://192.168.3.91:8081/repository/maven-public/</url>
+            <url>http://192.168.3.193:8081/repository/maven-public/</url>
             <mirrorOf>*</mirrorOf>
         </mirror>
     </mirrors>
@@ -156,19 +192,19 @@ vi settings.xml
         <profile>
             <id>nexus</id>
             <properties>
-                <altSnapshotDeploymentRepository>maven-snapshots::default::http://192.168.3.91:8081/repository/maven-snapshots/</altSnapshotDeploymentRepository>
-                <altReleaseDeploymentRepository>maven-releases::default::http://192.168.3.91:8081/repository/maven-releases/</altReleaseDeploymentRepository>
+                <altSnapshotDeploymentRepository>maven-snapshots::default::http://192.168.3.193:8081/repository/maven-snapshots/</altSnapshotDeploymentRepository>
+                <altReleaseDeploymentRepository>maven-releases::default::http://192.168.3.193:8081/repository/maven-releases/</altReleaseDeploymentRepository>
             </properties>
             <repositories>
                 <repository>
                     <id>maven-releases</id>
-                    <url>http://192.168.3.91:8081/repository/maven-releases/</url>
+                    <url>http://192.168.3.193:8081/repository/maven-releases/</url>
                     <releases><enabled>true</enabled></releases>
                     <snapshots><enabled>false</enabled></snapshots>
                 </repository>
                 <repository>
                     <id>maven-snapshots</id>
-                    <url>http://192.168.3.91:8081/repository/maven-snapshots/</url>
+                    <url>http://192.168.3.193:8081/repository/maven-snapshots/</url>
                     <releases><enabled>false</enabled></releases>
                     <snapshots><enabled>true</enabled></snapshots>
                 </repository>
@@ -219,11 +255,11 @@ rm -rf ~/.m2/repository
     <distributionManagement>
     <snapshotRepository>
         <id>maven-snapshots</id>
-        <url>http://192.168.0.246:8081/repository/maven-snapshots/</url>
+        <url>http://192.168.3.193:8081/repository/maven-snapshots/</url>
     </snapshotRepository>
     <repository>
         <id>maven-releases</id>
-        <url>http://192.168.0.246:8081/repository/maven-releases/</url>
+        <url>http://192.168.3.193:8081/repository/maven-releases/</url>
     </repository>
     </distributionManagement>
     ```
@@ -233,7 +269,7 @@ rm -rf ~/.m2/repository
 2. 在命令行中强制指定仓库
 
     ```bash
-    mvn deploy -DaltDeploymentRepository=maven-snapshots::default::http://192.168.0.246:8081/repository/maven-snapshots/
+    mvn deploy -DaltDeploymentRepository=maven-snapshots::default::http://192.168.3.193:8081/repository/maven-snapshots/
     ```
 
     这个方式每次执行 maven deploy 命令时都要指定仓库，也嫌麻烦。不推荐。
@@ -247,8 +283,8 @@ rm -rf ~/.m2/repository
         <profile>
             <id>nexus</id>
             <properties>
-                <altSnapshotDeploymentRepository>maven-snapshots::default::http://192.168.0.246:8081/repository/maven-snapshots/</altSnapshotDeploymentRepository>
-                <altReleaseDeploymentRepository>maven-releases::default::http://192.168.0.246:8081/repository/maven-releases/</altReleaseDeploymentRepository>
+                <altSnapshotDeploymentRepository>maven-snapshots::default::http://192.168.3.193:8081/repository/maven-snapshots/</altSnapshotDeploymentRepository>
+                <altReleaseDeploymentRepository>maven-releases::default::http://192.168.3.193:8081/repository/maven-releases/</altReleaseDeploymentRepository>
             </properties>
             <repositories>
             </repositories>
@@ -282,13 +318,13 @@ mkdir -p ~/work/code/temp/java-demo
 cd ~/work/code/temp/java-demo
 
 
-# 现在不能直接从 github 下载了？
-#wget https://github.com/skyao/learning-debian/blob/main/content/zh-cn/docs/develop/langurage/java/maven/images/maven-deploy-demo.tar
+# 直接从 github 下载
+wget https://github.com/skyao/learning-debian/raw/refs/heads/main/content/zh-cn/docs/develop/langurage/java/maven/images/maven-deploy-demo.tar
 
-# 先收工下载到本地，再scp 传输文件到 devserver91 机器备用
-# scp ./maven-deploy-demo.tar sky@192.168.3.91:/home/sky/work/code/temp/java-demo
+# 先收工下载到本地，再scp 传输文件到 devserver193 机器备用
+# scp ./maven-deploy-demo.tar sky@192.168.3.193:/home/sky/work/code/temp/java-demo
 # 以后用的时候再从 devserver91 机器下载
-scp sky@192.168.3.91:/home/sky/work/code/temp/java-demo/maven-deploy-demo.tar .
+scp sky@192.168.3.193:/home/sky/work/code/temp/java-demo/maven-deploy-demo.tar .
 
 tar -xvf maven-deploy-demo.tar
 cd maven-deploy-demo
@@ -300,15 +336,15 @@ mvn deploy
 
 ```bash
 ......
-Uploading to maven-snapshots: http://192.168.3.91:8081/repository/maven-snapshots/com/example/maven-deploy-demo/1.0.0-SNAPSHOT/maven-deploy-demo-1.0.0-20250507.023145-1.pom
-Uploaded to maven-snapshots: http://192.168.3.91:8081/repository/maven-snapshots/com/example/maven-deploy-demo/1.0.0-SNAPSHOT/maven-deploy-demo-1.0.0-20250507.023145-1.pom (887 B at 25 kB/s)
-Uploading to maven-snapshots: http://192.168.3.91:8081/repository/maven-snapshots/com/example/maven-deploy-demo/1.0.0-SNAPSHOT/maven-deploy-demo-1.0.0-20250507.023145-1.jar
-Uploaded to maven-snapshots: http://192.168.3.91:8081/repository/maven-snapshots/com/example/maven-deploy-demo/1.0.0-SNAPSHOT/maven-deploy-demo-1.0.0-20250507.023145-1.jar (2.2 kB at 118 kB/s)
-Downloading from maven-snapshots: http://192.168.3.91:8081/repository/maven-snapshots/com/example/maven-deploy-demo/maven-metadata.xml
-Uploading to maven-snapshots: http://192.168.3.91:8081/repository/maven-snapshots/com/example/maven-deploy-demo/1.0.0-SNAPSHOT/maven-metadata.xml
-Uploaded to maven-snapshots: http://192.168.3.91:8081/repository/maven-snapshots/com/example/maven-deploy-demo/1.0.0-SNAPSHOT/maven-metadata.xml (778 B at 46 kB/s)
-Uploading to maven-snapshots: http://192.168.3.91:8081/repository/maven-snapshots/com/example/maven-deploy-demo/maven-metadata.xml
-Uploaded to maven-snapshots: http://192.168.3.91:8081/repository/maven-snapshots/com/example/maven-deploy-demo/maven-metadata.xml (288 B at 19 kB/s)
+Uploading to maven-snapshots: http://192.168.3.193:8081/repository/maven-snapshots/com/example/maven-deploy-demo/1.0.0-SNAPSHOT/maven-deploy-demo-1.0.0-20250507.023145-1.pom
+Uploaded to maven-snapshots: http://192.168.3.193:8081/repository/maven-snapshots/com/example/maven-deploy-demo/1.0.0-SNAPSHOT/maven-deploy-demo-1.0.0-20250507.023145-1.pom (887 B at 25 kB/s)
+Uploading to maven-snapshots: http://192.168.3.193:8081/repository/maven-snapshots/com/example/maven-deploy-demo/1.0.0-SNAPSHOT/maven-deploy-demo-1.0.0-20250507.023145-1.jar
+Uploaded to maven-snapshots: http://192.168.3.193:8081/repository/maven-snapshots/com/example/maven-deploy-demo/1.0.0-SNAPSHOT/maven-deploy-demo-1.0.0-20250507.023145-1.jar (2.2 kB at 118 kB/s)
+Downloading from maven-snapshots: http://192.168.3.193:8081/repository/maven-snapshots/com/example/maven-deploy-demo/maven-metadata.xml
+Uploading to maven-snapshots: http://192.168.3.193:8081/repository/maven-snapshots/com/example/maven-deploy-demo/1.0.0-SNAPSHOT/maven-metadata.xml
+Uploaded to maven-snapshots: http://192.168.3.193:8081/repository/maven-snapshots/com/example/maven-deploy-demo/1.0.0-SNAPSHOT/maven-metadata.xml (778 B at 46 kB/s)
+Uploading to maven-snapshots: http://192.168.3.193:8081/repository/maven-snapshots/com/example/maven-deploy-demo/maven-metadata.xml
+Uploaded to maven-snapshots: http://192.168.3.193:8081/repository/maven-snapshots/com/example/maven-deploy-demo/maven-metadata.xml (288 B at 19 kB/s)
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
