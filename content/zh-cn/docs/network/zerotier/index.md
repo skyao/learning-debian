@@ -70,10 +70,10 @@ sudo zerotier-cli info
 输出内容为:
 
 ```bash
-200 info e329f9xxxx 1.16.0 ONLINE
+200 info 7c134f5bbc 1.16.0 ONLINE
 ```
 
-格式为 "200 info <nodeID> <version> ONLINE". 记下这里的 nodeID e329f9xxxx 备用.
+格式为 "200 info <nodeID> <version> ONLINE". 记下这里的 nodeID 7c134f5bbc 备用.
 
 注意: moon 节点不需要加入 zerotier 网络, 也就是不要需要执行 `zerotier-cli join` 命令.
 
@@ -100,14 +100,14 @@ vi moon.js
 在 stableEndpoints 设置公网IP地址和端口:
 
 ```bash
-"stableEndpoints": ["159.75.xxx.xxx/9993"]
+"stableEndpoints": ["159.75.84.176/9993"]
 ```
 
 另外记录下 id,这个后面要作为 moonID 使用. 
 
 ```json
 { 
- "id": "e329f95577", 
+ "id": "7c134f5bbc", 
 }
 ```
 
@@ -121,14 +121,14 @@ sudo zerotier-idtool genmoon moon.json
 输出为:
 
 ```bash
-wrote 000000e329f95577.moon (signed world with timestamp 1761795759910)
+wrote 0000007c134f5bbc.moon (signed world with timestamp 1763809887879)
 ```
 
 把生成的 .moon 文件放到 /var/lib/zerotier-one/moons.d/ 目录下，并重启服务：
 
 ```bash
 sudo mkdir -p /var/lib/zerotier-one/moons.d
-sudo cp 000000*.moon ls 
+sudo cp 000000*.moon /var/lib/zerotier-one/moons.d/
 sudo systemctl restart zerotier-one
 ```
 
@@ -139,7 +139,7 @@ sudo systemctl restart zerotier-one
 在 zerotier 的客户端如另外一台 linux 机器上执行命令:
 
 ```bash
-sudo zerotier-cli orbit e329f95577 e329f95577
+sudo zerotier-cli orbit 7c134f5bbc 7c134f5bbc
 ```
 
 输出:
@@ -158,17 +158,15 @@ sudo zerotier-cli listpeers
 
 ```bash
 200 listpeers <ztaddr> <path> <latency> <version> <role>
-200 listpeers 41d49af6c2 35.208.54.217/59841;5685;5475 205 1.15.3 LEAF
-200 listpeers 778cde7190 - -1 - PLANET
-200 listpeers 9b0823e410 202.182.98.67/3126;50736;54726 234 1.14.2 LEAF
-200 listpeers a0ddbe8017 121.228.151.51/50472;135162;50063 -1 1.14.2 LEAF
-200 listpeers a599bc239e 14.145.158.61/62057;8583;8583 55 1.10.6 LEAF
-200 listpeers b23346cdea 116.21.253.112/35799;136192;51083 53 1.10.6 LEAF
-200 listpeers cafe04eba9 84.17.53.155/9993;25705;65562 189 - PLANET
-200 listpeers cafe80ed74 185.152.67.145/9993;25705;60342 288 - PLANET
-200 listpeers cafefd6717 79.127.159.187/9993;680;25577 132 - PLANET
-200 listpeers e329f95577 - -1 1.16.0 MOON
-200 listpeers e9c4d1196f 121.228.198.7/61818;137609;52516 32 1.14.2 LEAF
+200 listpeers 41d49af6c2 35.208.126.89/24893;19203;19203 270 1.15.3 LEAF
+200 listpeers 778cde7190 103.195.103.66/9993;-1;4557 300 - PLANET
+200 listpeers 7c134f5bbc 159.75.84.176/9993;4857;4796 47 1.16.0 MOON
+200 listpeers 9b0823e410 202.182.98.67/26883;9863;9575 261 1.14.2 LEAF
+200 listpeers a0ddbe8017 192.168.4.1/9993;14869;14850 12 1.14.2 LEAF
+200 listpeers a599bc239e 14.145.158.2/29427;2717;2717 174 1.10.6 LEAF
+200 listpeers cafe04eba9 84.17.53.155/9993;4858;4559 249 - PLANET
+200 listpeers cafe80ed74 185.152.67.145/9993;34887;174552 164 - PLANET
+200 listpeers cafefd6717 79.127.159.187/9993;28942;29337 170 - PLANET
 ```
 
 
@@ -183,13 +181,13 @@ mkdir -p /etc/zerotier/moons.d
 scp 从 moon 节点机器上复制 moon 文件过来:
 
 ```bash
-scp sky@skyao.net:/var/lib/zerotier-one/moons.d/000000e329f95577.moon /etc/zerotier/moons.d
+scp sky@skyao.net:/var/lib/zerotier-one/moons.d/0000007c134f5bbc.moon /etc/zerotier/moons.d
 ```
 
 再执行 `orbit` 命令:
 
 ```bash
-zerotier-cli orbit e329f95577 e329f95577
+zerotier-cli orbit 7c134f5bbc 7c134f5bbc
 ```
 
 重启 zerotier:
@@ -212,7 +210,7 @@ zerotier-cli listpeers
 200 listpeers e329f95577 - -1 - MOON
 
 # 连接 moon 完成后
-200 listpeers e329f95577 159.75.84.176/30483;497;490 6 1.16.0 MOON
+200 listpeers 7c134f5bbc 159.75.84.176/9993;4857;4796 47 1.16.0 MOON
 ```
 
 ## 附录 - zerotier基本概念
