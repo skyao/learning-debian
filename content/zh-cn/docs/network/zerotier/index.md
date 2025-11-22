@@ -213,6 +213,18 @@ zerotier-cli listpeers
 200 listpeers 7c134f5bbc 159.75.84.176/9993;4857;4796 47 1.16.0 MOON
 ```
 
+如果不再需要 moon 节点, 可以执行 `zerotier-cli unorbit` 命令:
+
+```bash
+zerotier-cli unorbit 7c134f5bbc
+```
+
+再次检查:
+
+```bash
+zerotier-cli listpeers
+```
+
 ## 附录 - zerotier基本概念
 
 ### 节点
