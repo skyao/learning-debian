@@ -2,7 +2,7 @@
 title: "[归档]用虚拟机实现的SSD NAS存储"
 linkTitle: "[归档]devserver91"
 date: 2025-04-03
-weight: 10
+weight: 100
 description: >
   利用 debian 12 在 pve 虚拟机中实现的 SSD NAS 方案
 ---
