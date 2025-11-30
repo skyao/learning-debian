@@ -36,7 +36,60 @@ lspci | grep storage
 09:03.0 SCSI storage controller: Red Hat, Inc. Virtio SCSI
 ```
 
+
+## 文件共享
+
+数据存放在 /mnt/data 目录下，包括：
+
+- downloads: 下载的文件
+- pve-shared: pve 共享目录
+- shared: 共享目录
+
+### sftp 服务
+
+安装了 sftp 服务，可以用于上传和下载文件。
+
+### nfs 共享
+
+其中 pve-shared 目录用于 pve 共享目录，shared 目录用于其他的共享，两者都挂载到 nfs 服务器上。
+
 参考本读书笔记中的 [devserver193](../../../../storage/devserver193/) 一节, 配置好磁盘并进行分区，并挂载到 `/mnt/data` 和 `/mnt/app` 目录, 然后安装 nfs server。
+
+### nginx下载
+
+另外新建一个 downloads 目录，用于存放供其他机器下载的文件，通常是只读的，通过 nginx 提供 http 下载服务。
+
+```bash
+$ cd /mnt/data               
+$ ls
+downloads  lost+found  pve-shared  services  shared
+$ cd downloads
+$ ls    
+docker  docker-compose  kubernetes
+```
+
+然后修改 nginx 配置，将 downloads 目录映射到 /var/www/html/downloads 目录。
+
+```bash
+sudo vi /etc/nginx/sites-available/default
+```
+
+添加如下配置：
+
+```properties
+       location /downloads {
+                alias /mnt/data/downloads;
+                autoindex on;                # 开启目录浏览
+                autoindex_exact_size off;    # 显示文件大小时用 KB/MB
+                autoindex_localtime on;      # 显示本地时间
+        }
+```
+
+然后重启 nginx 服务：
+
+```bash
+sudo systemctl restart nginx
+```
 
 ## 搭建开发环境
 

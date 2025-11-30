@@ -245,9 +245,128 @@ nexus 安装后自带的默认仓库：
 
 目前不做 .net 开发，所以 nuget 仓库暂时用不上，都删除。
 
-### 其他仓库
+### apt 仓库
 
-需要自己创建，参见后面的章节。
+nexus 提供对 apt 的支持，可以创建 apt proxy 和 apt host 仓库。
+
+我目前对 apt host 没有需求，就简单的新建一个 apt proxy 仓库即可。
+
+参考官方文档：
+
+https://help.sonatype.com/en/apt-repositories.html
+
+进入 nexus 管理页面，选择 `Settings` -> `Repositories` ->  `Create repository`，选择 `Apt (Proxy)` 类型，然后填写:
+
+- Name: apt-debian13
+
+- Distribution： trixie
+
+- Remote storage URL: http://mirrors.ustc.edu.cn/debian/
+
+创建完成后，修改 debian 的 apt 源，使用 apt-debian13 仓库。
+
+安装之后默认的 /etc/apt/sources.list 为，这里使用 ustc 的镜像源：
+
+```bash
+#deb cdrom:[Debian GNU/Linux 13.1.0 _Trixie_ - Official amd64 DVD Binary-1 with firmware 20250906-10:24]/ trixie contrib main non-free-firmware
+
+deb http://mirrors.ustc.edu.cn/debian/ trixie main non-free-firmware
+deb-src http://mirrors.ustc.edu.cn/debian/ trixie main non-free-firmware
+
+deb http://security.debian.org/debian-security trixie-security main non-free-firmware
+deb-src http://security.debian.org/debian-security trixie-security main non-free-firmware
+
+# trixie-updates, to get updates before a point release is made;
+# see https://www.debian.org/doc/manuals/debian-reference/ch02.en.html#_updates_and_backports
+deb http://mirrors.ustc.edu.cn/debian/ trixie-updates main non-free-firmware
+deb-src http://mirrors.ustc.edu.cn/debian/ trixie-updates main non-free-firmware
+```
+
+```bash
+sudo vi /etc/apt/sources.list
+```
+
+将源替换为：
+
+```bash
+# Debian 13 (trixie) - Main repository via Nexus
+deb [trusted=yes] http://192.168.3.193:8081/repository/apt-debian13/ trixie main contrib non-free non-free-firmware
+deb-src [trusted=yes] http://192.168.3.193:8081/repository/apt-debian13/ trixie main contrib non-free non-free-firmware
+
+# no change to Security updates source
+deb http://security.debian.org/debian-security trixie-security main non-free-firmware
+deb-src http://security.debian.org/debian-security trixie-security main non-free-firmware
+
+# Debian 13 (trixie-updates) - Updates via Nexus
+# trixie-updates, to get updates before a point release is made;
+# see https://www.debian.org/doc/manuals/debian-reference/ch02.en.html#_updates_and_backports
+deb http://192.168.3.193:8081/repository/apt-debian13/ trixie-updates main non-free-firmware
+deb-src http://192.168.3.193:8081/repository/apt-debian13/ trixie-updates main non-free-firmware
+```
+
+更新 apt 源：
+
+```bash
+sudo apt update
+```
+
+输出为：
+
+```bash
+Hit:1 http://192.168.3.193:8081/repository/apt-debian13 trixie InRelease
+Hit:2 http://192.168.3.193:8081/repository/apt-debian13 trixie-updates InRelease              
+Hit:3 https://download.docker.com/linux/debian trixie InRelease                               
+Hit:4 http://security.debian.org/debian-security trixie-security InRelease
+All packages are up to date. 
+```
+
+可以考虑继续用 nexus 来代理 docker 的 apt 源。继续创建一个 docker apt proxy 仓库：
+
+- Name: apt-docker
+
+- Distribution： trixie
+
+- Remote storage URL: https://download.docker.com/linux/debian
+
+然后修改 docker 的 apt 源，使用 apt-docker 仓库：
+
+```bash
+sudo vi /etc/apt/sources.list.d/docker.list
+```
+
+将原来的内容:
+```properties
+deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian   trixie stable
+```
+
+替换为：
+
+```properties
+# offical docker apt source
+# deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian   trixie stable
+# nexus proxy docker apt source
+deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] http://192.168.3.193:8081/repository/apt-docker/   trixie stable
+```
+
+更新 apt 源：
+
+```bash
+sudo apt update
+```
+
+输出为：
+
+```bash
+Hit:1 http://192.168.3.193:8081/repository/apt-debian13 trixie InRelease
+Hit:2 http://192.168.3.193:8081/repository/apt-debian13 trixie-updates InRelease
+Hit:3 http://192.168.3.193:8081/repository/apt-docker trixie InRelease
+Hit:4 http://security.debian.org/debian-security trixie-security InRelease
+All packages are up to date.
+```
+
+### 其他编程语言仓库
+
+需要自己创建，参见后面各个语言安装和配置的章节。
 
 - go module 仓库
 - rust cargo 仓库
