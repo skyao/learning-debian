@@ -81,3 +81,20 @@ sdk default java 17.0.14-zulu
 sdk current java
 ```
 
+## 更新
+
+更新 sdkman 到最新版本：
+
+```bash
+sdk selfupdate force
+```
+
+更新之后查看版本：
+
+```bash
+sdk version  
+
+SDKMAN!
+script: 5.20.0
+native: 0.7.21 (linux x86_64)
+```
