@@ -24,7 +24,7 @@ sdk list java
 追踪一下最新版本的 jdk, 凑巧也是 lts 版本：
 
 ```bash
-sdk install java 25.0.1-zulu
+sdk install java 25.0.2-zulu
 ```
 
 ### jdk21（LTS）
@@ -32,7 +32,7 @@ sdk install java 25.0.1-zulu
 上一个版本的 LTS, 虚拟线程正式发布，分代 ZGC、序列集合等新特性。
 
 ```bash
-sdk install java 21.0.9-zulu
+sdk install java 21.0.10-zulu
 ```
 
 ### jdk17（LTS）
@@ -40,7 +40,7 @@ sdk install java 21.0.9-zulu
 包含密封类（Sealed Classes）、模式匹配等新特性。
 
 ```bash
-sdk install java 17.0.17-zulu
+sdk install java 17.0.18-zulu
 ```
 
 ### jdk11（LTS）
@@ -48,7 +48,7 @@ sdk install java 17.0.17-zulu
 移除 Java EE 模块，引入 HTTP Client API、局部变量类型推断（var）等
 
 ```bash
-sdk install java 11.0.29-zulu
+sdk install java 11.0.30-zulu
 ```
 
 ### jdk8（LTS）
@@ -56,7 +56,7 @@ sdk install java 11.0.29-zulu
 jdk8 是最广泛使用的版本，支持 Lambda 表达式、Stream API 等。
 
 ```bash
-sdk install java 8.0.472-zulu
+sdk install java 8.0.482-zulu
 ```
 
 ## 使用 jdk
@@ -70,13 +70,13 @@ ls ~/.sdkman/candidates/java/
 输出如下：
 
 ```bash
-11.0.29-zulu  17.0.17-zulu  21.0.9-zulu  25.0.1-zulu  8.0.472-zulu  current
+11.0.30-zulu  17.0.18-zulu  21.0.10-zulu  25.0.2-zulu  8.0.482-zulu  current
 ```
 
 设置默认的 jdk 版本：
 
 ```bash
-sdk default java 21.0.9-zulu
+sdk default java 21.0.10-zulu
 ```
 
 在当前 shell 中使用指定版本的 jdk，可覆盖默认设置：

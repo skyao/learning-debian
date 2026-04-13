@@ -43,8 +43,8 @@ source ~/.sdkman/bin/sdkman-init.sh
 $ sdk version  
 
 SDKMAN!
-script: 5.20.0
-native: 0.7.14 (linux x86_64)
+script: 5.22.4
+native: 0.7.32 (linux x86_64)
 ```
 
 默认情况下，sdkman 安装在 HOME 下的 `.sdkman` 子目录中：

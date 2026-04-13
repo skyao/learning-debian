@@ -47,19 +47,19 @@ Available Maven Versions
 安装指定版本的 maven, 4.0 还是 rc 版本, 先用 3.9 系列：
 
 ```bash
-sdk install maven 3.9.11
+sdk install maven 3.9.14
 ```
 
 输出为：
 
 ```bash
-Downloading: maven 3.9.11
+Downloading: maven 3.9.14
 
 In progress...
 
 ########################################################################################################################################### 100.0%
 
-Installing: maven 3.9.11
+Installing: maven 3.9.14
 Done installing!
 ```
 
@@ -68,11 +68,8 @@ Done installing!
 ```bash
 $ ls ~/.sdkman/candidates/maven/
 
-3.9.11
+3.9.14
 ```
-
-sdk default maven 3.9.11
-
 
 重启 shell 或者执行下列命令重新加载 sdkman ：
 
@@ -83,7 +80,7 @@ source ~/.sdkman/bin/sdkman-init.sh
 安全起见，明确设置 maven 的默认版本：
 
 ```bash
-sdk default maven 3.9.11
+sdk default maven 3.9.14
 ```
 
 验证 maven 安装版本：
@@ -91,11 +88,11 @@ sdk default maven 3.9.11
 ```bash
 $ mvn --version
 
-Apache Maven 3.9.11 (3e54c93a704957b63ee3494413a2b544fd3d825b)
+Apache Maven 3.9.14 (996c630dbc656c76214ce58821dcc58be960875b)
 Maven home: /home/sky/.sdkman/candidates/maven/current
-Java version: 21.0.9, vendor: Azul Systems, Inc., runtime: /home/sky/.sdkman/candidates/java/21.0.9-zulu
+Java version: 21.0.10, vendor: Azul Systems, Inc., runtime: /home/sky/.sdkman/candidates/java/21.0.10-zulu
 Default locale: en_US, platform encoding: UTF-8
-OS name: "linux", version: "6.12.48+deb13-amd64", arch: "amd64", family: "unix"
+OS name: "linux", version: "6.17.0-20-generic", arch: "amd64", family: "unix"
 ```
 
 有时候不能直接生效，还是需要重新打开 shell 或者退出后重新 ssh 登录才能生效。
@@ -116,10 +113,10 @@ $ echo $PATH | grep sdkman
 /home/sky/.sdkman/candidates/java/current/bin:/home/sky/bin:/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games ➜ maven-deploy-demo sdk list maven sdk current maven No current version of maven configured.
 ```
 
-比如上面这个例子，说明 PATH 环境变量中没有包含 sdkman 下 maven 的路径。导致执行 mvn 命令时无法找到 maven 命令。还是需要执行 `sdk default maven 3.9.11` 命令来设置默认版本。
+比如上面这个例子，说明 PATH 环境变量中没有包含 sdkman 下 maven 的路径。导致执行 mvn 命令时无法找到 maven 命令。还是需要执行 `sdk default maven 3.9.14` 命令来设置默认版本。
 
 ```bash
-sdk default maven 3.9.11
+sdk default maven 3.9.14
 ```
 
 然后重新打开 shell 或者退出后重新 ssh 登录才能生效。
