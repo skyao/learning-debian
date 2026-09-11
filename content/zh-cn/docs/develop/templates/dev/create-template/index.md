@@ -7,13 +7,13 @@ description: >
   创建基于debian12/13 的 dev 开发模板
 ---
 
-## 制作过程-v1
+## 制作过程
 
 以 debian 13 为例。
 
 ### 准备虚拟机
 
-从模版 template-debian13-basic-v01 （取最新版本） full clone 克隆一个虚拟机，命名为 template-debian13-dev-v01，VM ID 为 990101.
+从模版 template-debian13-basic-vxx （取最新版本） full clone 克隆一个虚拟机，命名为 template-debian13-dev-v01，VM ID 为 990101.
 
 开发需要的 cpu 和内存稍大，修改虚拟机参数，cpu 修改为 8 核，内存 32g（mini 8192，memory 32768）。
 
@@ -25,7 +25,7 @@ description: >
 
 #### 安装 docker
 
-- docker/docker-compose: https://skyao.net/learning-docker/docs/installation/debian12/
+- docker/docker-compose: https://skyao.net/learning-docker/docs/installation/debian13/
 - kubectl
 
 #### 安装开发工具
@@ -44,9 +44,19 @@ description: >
 - python
 - nodejs
 
-## 制作过程-v2
+### 地域迁移
 
-v2要放到广州南沙的开发环境， 网段是 192.168.0.0/24， devserver92 的 ip 是 192.168.0.92，因此所有相关的 ip 信息都要修改。
+当迁移到其他地域时，需要修改的设置除了有 basic 的改动之外，还有 devserver9x 相关的配置：
 
-将 dev-v1 的模板传送到广州南沙，然后在这个基础上，按照上面制作 dev-v1 的流程，重头走一边制作流程，注意需要修改 ip 地址的地方，就可以完成 dev-v2 的制作。
+1. docker 使用的 habor 代理 ： https://skyao.net/learning-docker/docs/repository/harbor/transparent-proxy/
+
+2. java 的 maven 配置： https://skyao.net/learning-debian/docs/develop/langurage/java/maven/
+
+3. golang 的 goproxy 配置： https://skyao.net/learning-golang/docs/develop/installation/settings/
+
+4. rust 的 cargo 代理源配置： ttps://skyao.net/learning-rust/docs/installation/cargo/
+
+5. python 的 pip 代理配置： https://skyao.net/learning-python/docs/installation/pip/
+
+6. nodejs 的 代理配置： https://skyao.net/learning-debian/docs/develop/langurage/nodejs/
 

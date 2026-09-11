@@ -4,8 +4,8 @@ linkTitle: "basic 模板"
 date: 2025-04-03
 weight: 10
 description: >
-  构建最基本的 debian 12 系统
+  构建最基本的 debian 13 系统
 ---
 
-https://skyao.net/learning-pve/templates/debian12/basic/
+https://skyao.net/learning-pve/templates/debian13/basic/
 
