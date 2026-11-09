@@ -160,9 +160,35 @@ sudo apt install -y mosh
 修改 `~/.ssh/config`：
 
 ```bash
-Host skyvps
+Host skyvps-sky
     HostName 2.25.115.31
     User sky
+    IdentityFile ~/.ssh/id_rsa
+    #IdentityFile ~/.ssh/id_ed25519
+    ServerAliveInterval 20
+    ServerAliveCountMax 3
+    TCPKeepAlive yes
+    Compression no              # 让 mosh/SSH 自己管，压缩反而增加 CPU
+    ControlMaster auto          # 复用连接，多个窗口秒开
+    ControlPath ~/.ssh/cm-%r@%h:%p
+    ControlPersist 10m
+
+Host skyvps-claude
+    HostName 2.25.115.31
+    User claude
+    IdentityFile ~/.ssh/id_rsa
+    #IdentityFile ~/.ssh/id_ed25519
+    ServerAliveInterval 20
+    ServerAliveCountMax 3
+    TCPKeepAlive yes
+    Compression no              # 让 mosh/SSH 自己管，压缩反而增加 CPU
+    ControlMaster auto          # 复用连接，多个窗口秒开
+    ControlPath ~/.ssh/cm-%r@%h:%p
+    ControlPersist 10m
+
+Host skyvps-claude2
+    HostName 2.25.115.31
+    User claude2
     IdentityFile ~/.ssh/id_rsa
     #IdentityFile ~/.ssh/id_ed25519
     ServerAliveInterval 20
