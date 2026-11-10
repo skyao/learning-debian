@@ -19,32 +19,32 @@ https://nodejs.org/en/download
 
 ```bash
 # Download and install nvm:
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.41.0/install.sh | bash
 
 # in lieu of restarting the shell
 \. "$HOME/.nvm/nvm.sh"
 
 # Download and install Node.js:
-nvm install 24
+nvm install 26
 
 # Verify the Node.js version:
-node -v # Should print "v24.11.0".
+node -v # Should print "v26.13.0".
 
 # Verify npm version:
-npm -v # Should print "11.6.1".
+npm -v # Should print "11.20.0".
 ```
 
 安装完成后验证：
 
 ```bash
 $ node -v
-v24.11.0
+v26.13.0
 
 $ nvm current
-v24.11.0
+v26.13.0
 
 $ npm -v 
-11.6.1
+11.20.0
 ```
 
 这里用了 nvm 来进行跨平台的 node 多版本管理。
